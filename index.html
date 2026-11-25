@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c8553d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Todos Santos">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Todos Santos Trip</title>
+<style>
+:root{--bg:#fbf4e6;--card:#fff;--ink:#2a2420;--mut:#7a6d62;--acc:#c8553d;--sea:#1f4e5f;--sun:#f6c453;--line:#eadfca}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 -apple-system,system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:84px}
+header{background:var(--acc);color:#fff;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px}
+header h1{margin:0;font-size:20px}
+header small{opacity:.9}
+#net{float:right;font-size:12px;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px}
+main{padding:12px 14px;max-width:720px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:10px 2px;font-size:11px;color:var(--mut)}
+nav button b{display:block;font-size:20px;font-weight:400}
+nav button.on{color:var(--acc);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0}
+.card h3{margin:0 0 2px;font-size:17px}
+.card p{margin:4px 0}
+.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;margin:2px 4px 2px 0;background:#f1e7d3;color:#5a4a3a}
+.tag.quiet{background:#dcefe3;color:#1d5a35}
+.tag.warn{background:#fbe0d9;color:#8a2a16}
+.tag.res{background:#e0e8f7;color:#23406e}
+.days{display:flex;gap:6px;overflow-x:auto;margin:6px 0}
+.days button{flex:none;border:1px solid var(--line);background:#fff;border-radius:18px;padding:6px 12px;font-size:14px}
+.days button.on{background:var(--sea);color:#fff;border-color:var(--sea)}
+.big{font-size:28px;font-weight:700}
+.row{display:flex;gap:10px}.row>*{flex:1}
+h2{font-size:18px;margin:16px 0 4px}
+a{color:var(--sea)}
+.mut{color:var(--mut);font-size:13px}
+textarea,input{width:100%;font:inherit;border:1px solid var(--line);border-radius:10px;padding:8px;background:#fffdf8}
+textarea{min-height:110px}
+label{display:block;font-weight:600;margin-top:12px}
+button.save{margin-top:12px;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-size:15px}
+.tl{border-left:3px solid var(--sun);padding-left:10px;margin:6px 0}
+.tl b{display:inline-block;min-width:68px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.filters button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 10px;font-size:13px}
+.filters button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+</style>
+</head>
+<body>
+<header><span id="net"></span><h1>Todos Santos &middot; Nov 27 – Dec 1</h1><small>Hacienda Todos Los Santos &middot; a birthday trip</small></header>
+<main id="app"></main>
+<nav id="nav"></nav>
+
+<script>
+/* ---------- helpers ---------- */
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+const LAT = 23.4486, LON = -110.2265, TZ = -7; // Baja California Sur: UTC-7, no DST
+const DAYS = [
+  {k:'11/27', d:'2026-11-27', label:'Fri 11/27'},
+  {k:'11/28', d:'2026-11-28', label:'Sat 11/28 🎂'},
+  {k:'11/29', d:'2026-11-29', label:'Sun 11/29'},
+  {k:'11/30', d:'2026-11-30', label:'Mon 11/30'},
+  {k:'12/1',  d:'2026-12-01', label:'Tue 12/1'}
+];
+const mapsLink = q => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+
+/* Sunset computed offline (NOAA approximation) */
+function sunsetMinutes(y, m, d){
+  const n = Math.floor((Date.UTC(y, m-1, d) - Date.UTC(y, 0, 0)) / 864e5);
+  const g = 2*Math.PI/365*(n-1);
+  const eq = 229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
+  const dec = 0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
+  const r = Math.PI/180, lat = LAT*r;
+  const ha = Math.acos(Math.cos(90.833*r)/(Math.cos(lat)*Math.cos(dec)) - Math.tan(lat)*Math.tan(dec))/r;
+  const rise = 720 - 4*(LON + ha) - eq, set = 720 - 4*(LON - ha) - eq;
+  const f = x => ((x + TZ*60) % 1440 + 1440) % 1440;
+  return {rise: f(rise), set: f(set)};
+}
+function fmt(min){ let h = Math.floor(min/60), m = Math.round(min%60); if(m===60){h++;m=0;} const ap = h>=12?'pm':'am'; h = h%12||12; return h+':'+String(m).padStart(2,'0')+' '+ap; }
+function sun(day){ const [y,m,d] = day.d.split('-').map(Number); return sunsetMinutes(y,m,d); }
+
+/* ---------- content ---------- */
+// type: eat | beach | do | night ; quiet = less touristy pick
+const PLACES = [
+ // EAT
+ {t:'eat', n:'Jazamango', q:'Jazamango Todos Santos', d:'Wood-fired Baja Med from chef Javier Plascencia. Your reservation.', tags:['res'], r:true},
+ {t:'eat', n:'Hierbabuena (Pescadero)', q:'Hierbabuena Pescadero', d:'Farm-to-table dinner in the middle of the farm it comes from. A bit off the beaten path.', quiet:true},
+ {t:'eat', n:'Agricole Tienda de Campo', q:'Agricole Tienda de Campo El Pescadero', d:'37-acre farm with restaurant, bakery and market in El Pescadero. Good for coffee and a wander.', quiet:true},
+ {t:'eat', n:'Pescadero62', q:'Pescadero62 El Pescadero', d:'Open-air garden restaurant, vegetarian and seafood.', quiet:true},
+ {t:'eat', n:"Carnitas Miguel's", q:"Carnitas Miguel's El Pescadero", d:'Roadside carnitas in El Pescadero, a local favorite. Go early for lunch.', quiet:true},
+ {t:'eat', n:'Carnitas Machin (Pescadero)', q:'Carnitas Machin Pescadero', d:'Taco stand in Pescadero recommended by Outside.', quiet:true},
+ {t:'eat', n:'El Compa Chava', q:'El Compa Chava Todos Santos ceviche', d:'Cheap and cheerful ceviche (fish, shrimp, octopus).', quiet:true},
+ {t:'eat', n:'The Green Room', q:'The Green Room Todos Santos', d:'Beachfront palapa bar and restaurant. The classic sunset dinner or drinks.'},
+ {t:'eat', n:'Los Adobes de Todos Santos', q:'Los Adobes de Todos Santos', d:'Long-running Mexican classics from local organic produce and seafood.'},
+ {t:'eat', n:'Mejibó', q:'Mejibo Todos Santos', d:'Creative Baja Med; has OpenTable reservations. Book ahead.'},
+ {t:'eat', n:'Caffe Todos Santos', q:'Caffe Todos Santos', d:'Longtime breakfast favorite downtown, with pastries and an art gallery attached.'},
+ {t:'eat', n:'Baja Beans Roasting Co.', q:'Baja Beans Roasting Todos Santos', d:'Pescadero roaster with a downtown Todos Santos location now. Coffee run.', quiet:true},
+ // BEACH
+ {t:'beach', n:'Playa Las Palmas', q:'Playa Las Palmas Todos Santos', d:'Inside the oasis; one of the few swimmable beaches near town. No amenities, so bring water and snacks. Watch for horse droppings and sand fleas.', quiet:true},
+ {t:'beach', n:'Playa San Pedrito', q:'Playa San Pedrito Todos Santos', d:'Mostly empty stretch just north of Rancho Pescadero. Great for a walk and sunset. Pacific currents: wade, don’t swim.', quiet:true},
+ {t:'beach', n:'Punta Lobos', q:'Punta Lobos Todos Santos', d:'Fishermen launch pangas here, and you can sometimes buy fish directly. Yellow chapel, beach club, and the Old Port trail starts here. Calmer water than most, but still the Pacific.', quiet:true},
+ {t:'beach', n:'Playa Los Cerritos', q:'Playa Los Cerritos', d:'Surf, palapa restaurants, bigger crowds. Sources disagree on swim safety: some say it’s one of the few safer Pacific beaches, others warn of strong currents. Wade only, check flags and lifeguards.', warn:true},
+ {t:'beach', n:'Playa La Cachora', q:'Playa La Cachora Todos Santos', d:'Another local beach to try. Shore breaks calmer in summer, so watch the surf this time of year.', quiet:true},
+ // DO
+ {t:'do', n:'Old Port (Puerto Nuevo) hike', q:'Punta Lobos yellow chapel Old Port trail', d:'Roughly 4-mile trail starting behind the yellow chapel on Punta Lobos beach. Do it in the morning or well before dark. Download an offline map first because signal is spotty.', quiet:true},
+ {t:'do', n:'Historic center and galleries', q:'Logan Gallery Todos Santos', d:'Todos Santos Plaza is a 5–10 min walk from the hotel; Logan Gallery is about 3 min. Galleries, Hotel California, church of Nuestra Señora del Pilar.'},
+ {t:'do', n:'Todos Santos Eco Adventures', q:'Todos Santos Eco Adventures', d:'Sierra Laguna hike ending in freshwater pools, horseback rides, guided trips. Book ahead.', quiet:true},
+ {t:'do', n:'Pescadero farm loop', q:'El Pescadero Baja California Sur', d:'Drive south on Hwy 19: Agricole, Baja Beans, carnitas, then Cerritos at the end of the loop.', quiet:true},
+ {t:'do', n:'Whales (early season)', q:'Todos Santos whale watching', d:'Gray whale season runs about Dec–Mar and humpback season is celebrated from Dec 15, so December 1 is early. Possible, not guaranteed. Worth asking Eco Adventures.'},
+ // NIGHT
+ {t:'night', n:'Todos Santos Brewing', q:'Todos Santos Brewing', d:'Open daily with live music, trivia and karaoke.'},
+ {t:'night', n:'Santo Remedio Bar', q:'Santo Remedio Todos Santos', d:'A short walk from the hotel.', quiet:true},
+ {t:'night', n:'The Dirty Rose', q:'The Dirty Rose Todos Santos', d:'Cocktail bar; about the latest night option in town (around 11 pm).'},
+ {t:'night', n:'La Copa Wine Bar', q:'La Copa Wine Bar Todos Santos', d:'Wine and charcuterie by the historic plaza.'},
+ {t:'night', n:'Sky Lounge at Guaycura', q:'Guaycura Boutique Hotel Todos Santos', d:'Rooftop hotel bar, quiet and relaxed.'},
+ {t:'night', n:'La Coronela at Hotel California', q:'Hotel California Todos Santos La Coronela', d:'Live music sometimes. It’s the tourist-famous one, so drop in for a drink only.'}
+];
+
+const PLAN = {
+ '11/27': [['Afternoon','Check in (3 pm). Pool and a stroll to Los Pinos Park.'],['Late afternoon','Walk the plaza and galleries'],['Sunset','Playa Las Palmas or a drink with a view'],['Dinner','Easy dinner in town: Caffe or La Copa'],['After','Todos Santos Brewing for live music']],
+ '11/28': [['Morning','Coffee, then Punta Lobos: watch pangas, Old Port hike'],['Lunch','Carnitas Miguel’s or El Compa Chava'],['Afternoon','Pool and rest, massage?'],['Sunset','San Pedrito walk'],['Dinner','🎂 Jazamango (confirm time in Edit)'],['After','Sky Lounge or The Dirty Rose nightcap']],
+ '11/29': [['Morning','Agricole for coffee and pastries, browse the farm'],['Lunch','Pescadero62 or Hierbabuena (check hours)'],['Afternoon','Los Cerritos: wade and watch surfers only'],['Sunset','The Green Room'],['After','Early night']],
+ '11/30': [['Morning','Eco Adventures hike or horseback (book ahead)'],['Afternoon','Galleries, shopping, long lunch'],['Sunset','Your pick: best light'],['Dinner','Mejibó (reserve)'],['After','La Copa wine bar']],
+ '12/1':  [['Morning','Slow breakfast, Baja Beans coffee'],['11:00','Check out'],['Drive','Hwy 19 back north/south for your flight. Leave extra time.']]
+};
+
+/* ---------- state ---------- */
+const state = { tab:'today', day: (()=>{ const t = new Date(); const k = (t.getMonth()+1)+'/'+t.getDate(); return DAYS.find(x=>x.k===k) ? k : '11/27'; })(), filter:'all' };
+const TABS = [['today','☀️','Today'],['plan','🗓️','Plan'],['eat','🌮','Eat'],['beach','🏖️','Beaches'],['do','🧭','Do'],['night','🌙','Night'],['edit','✏️','Edit']];
+
+function dayButtons(){ return '<div class="days">'+DAYS.map(x=>`<button class="${x.k===state.day?'on':''}" onclick="state.day='${x.k}';render()">${x.label}</button>`).join('')+'</div>'; }
+function linesFor(key, dayKey){ const txt = LS.get(key,''); return txt.split('\n').map(s=>s.trim()).filter(s=>s.startsWith(dayKey+' ')||s.startsWith(dayKey+':')||s.startsWith(dayKey+'-')).map(s=>s.slice(dayKey.length).replace(/^[\s:-]+/,'')); }
+
+function placeCard(p){
+  const tags = (p.quiet?'<span class="tag quiet">less touristy</span>':'')+(p.warn?'<span class="tag warn">swim caution</span>':'')+(p.tags||[]).map(x=>`<span class="tag ${x}">${x==='res'?'reserved':x}</span>`).join('');
+  return `<div class="card"><h3>${p.n}</h3>${tags}<p>${p.d}</p><p class="mut"><a href="${mapsLink(p.q)}" target="_blank" rel="noopener">Open in Maps (needs signal)</a></p></div>`;
+}
+
+/* ---------- views ---------- */
+function viewToday(){
+  const day = DAYS.find(x=>x.k===state.day), s = sun(day);
+  const tides = linesFor('tides', day.k), music = linesFor('music', day.k);
+  const wx = LS.get('wx', null); let wxHtml = '<p class="mut">No forecast saved yet. Open the app once with signal.</p>';
+  if (wx && wx.daily){ const i = wx.daily.time.indexOf(day.d); if (i>=0) wxHtml = `<div class="big">${Math.round(wx.daily.temperature_2m_max[i])}° / ${Math.round(wx.daily.temperature_2m_min[i])}°F</div><p>${wxDesc(wx.daily.weathercode[i])}, rain chance ${wx.daily.precipitation_probability_max[i]??'?'}%</p><p class="mut">Forecast saved ${new Date(wx.saved).toLocaleString()}</p>`; else wxHtml='<p class="mut">That date is outside the saved forecast range.</p>'; }
+  const plan = (PLAN[day.k]||[]).map(([a,b])=>`<div class="tl"><b>${a}</b> ${b}</div>`).join('');
+  const resv = LS.get('resv','');
+  return dayButtons()+
+   `<div class="row"><div class="card"><h3>🌅 Sunset</h3><div class="big">${fmt(s.set)}</div><p class="mut">Sunrise ${fmt(s.rise)}. Computed offline. Be at the beach about 30 min early.</p></div>
+    <div class="card"><h3>🌤️ Weather</h3>${wxHtml}</div></div>
+   <div class="card"><h3>🌊 Tides</h3>${tides.length?tides.map(t=>`<p>${t}</p>`).join(''):'<p class="mut">Nothing added yet. Add tide times for this day in Edit.</p>'}</div>
+   <div class="card"><h3>🎵 Live music</h3>${music.length?music.map(t=>`<p>${t}</p>`).join(''):'<p class="mut">Nothing added yet. Add gigs in Edit.</p>'}
+     <p class="mut">Known regulars: Todos Santos Brewing has live music most nights.</p></div>
+   ${resv?`<div class="card"><h3>📌 Reservations</h3><p>${resv.replace(/\n/g,'<br>')}</p></div>`:''}
+   <h2>Plan for the day</h2><div class="card">${plan}</div>`;
+}
+function wxDesc(c){ if(c===0)return'Clear'; if(c<=2)return'Mostly sunny'; if(c===3)return'Overcast'; if(c<=48)return'Fog'; if(c<=57)return'Drizzle'; if(c<=67)return'Rain'; if(c<=82)return'Showers'; return'Storms'; }
+function viewPlan(){ return DAYS.map(d=>`<h2>${d.label}</h2><div class="card">${(PLAN[d.k]||[]).map(([a,b])=>`<div class="tl"><b>${a}</b> ${b}</div>`).join('')}</div>`).join('')+'<p class="mut">Hotel check-in 3 pm, check-out 11 am. Hotel doesn’t serve breakfast, so coffee runs matter.</p>'; }
+function viewList(type, intro){
+  const showQuiet = state.filter==='quiet';
+  const list = PLACES.filter(p=>p.t===type && (!showQuiet || p.quiet));
+  return `<p class="mut">${intro}</p><div class="filters"><button class="${!showQuiet?'on':''}" onclick="state.filter='all';render()">All</button><button class="${showQuiet?'on':''}" onclick="state.filter='quiet';render()">Less touristy only</button></div>`+list.map(placeCard).join('');
+}
+function viewEdit(){
+  return `<p class="mut">Everything here saves on this phone and works offline.</p>
+  <label>Tides (one per line, start with the date)</label><textarea id="tides" placeholder="11/28 High 5:12a 4.1ft, low 11:30a 0.8ft">${LS.get('tides','')}</textarea>
+  <label>Live music (one per line)</label><textarea id="music" placeholder="11/28 9pm Todos Santos Brewing - band name">${LS.get('music','')}</textarea>
+  <label>Reservations</label><textarea id="resv" placeholder="Jazamango: day and time">${LS.get('resv','')}</textarea>
+  <label>Notes</label><textarea id="notes">${LS.get('notes','')}</textarea>
+  <button class="save" onclick="saveEdit()">Save</button>
+  <h2>Offline check</h2><p class="mut" id="offl">Checking…</p>
+  <button class="save" onclick="refreshWx(true)">Refresh forecast now</button>`;
+}
+function saveEdit(){ ['tides','music','resv','notes'].forEach(k=>LS.set(k, document.getElementById(k).value)); alert('Saved'); }
+
+function render(){
+  const v = state.tab;
+  const html = v==='today'?viewToday(): v==='plan'?viewPlan(): v==='eat'?viewList('eat','Hotel serves no breakfast. Pescadero spots are a short drive south. Marked ones are the less touristy picks.'): v==='beach'?viewList('beach','Pacific beaches here have strong currents. Check flags, and wade rather than swim unless it is clearly calm.'): v==='do'?viewList('do','Daytime ideas.'): v==='night'?viewList('night','Todos Santos goes quiet early. Many places wind down by about 11 pm.'): viewEdit();
+  document.getElementById('app').innerHTML = html;
+  document.getElementById('nav').innerHTML = TABS.map(([k,i,l])=>`<button class="${k===state.tab?'on':''}" onclick="state.tab='${k}';render();scrollTo(0,0)"><b>${i}</b>${l}</button>`).join('');
+  if (v==='edit') offlineStatus();
+}
+async function offlineStatus(){
+  const el = document.getElementById('offl'); if(!el) return;
+  let txt = 'Service worker: ';
+  if ('serviceWorker' in navigator){ const r = await navigator.serviceWorker.getRegistration(); txt += r ? 'installed. The app is stored for offline use.' : 'not installed yet. Open the app once with signal.'; } else txt += 'not supported in this browser.';
+  el.textContent = txt;
+}
+
+/* ---------- weather (cached) ---------- */
+async function refreshWx(manual){
+  try{
+    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+'&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=16');
+    if(!r.ok) throw new Error('bad');
+    const j = await r.json(); LS.set('wx', {daily:j.daily, saved:Date.now()});
+    if(manual) alert('Forecast updated'); render();
+  }catch(e){ if(manual) alert('No connection. Showing saved forecast.'); }
+}
+
+/* ---------- boot ---------- */
+function netBadge(){ document.getElementById('net').textContent = navigator.onLine ? 'online' : 'offline'; }
+addEventListener('online', ()=>{ netBadge(); refreshWx(); }); addEventListener('offline', netBadge);
+netBadge(); render(); if(navigator.onLine) refreshWx();
+if ('serviceWorker' in navigator) addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
