@@ -144,6 +144,18 @@ html[data-theme=dark] .tile.fb{filter:invert(.92) hue-rotate(180deg) brightness(
 .gwrap.on{display:block}
 .gwrap iframe{width:100%;height:100%;border:0}
 .gwrap .back{position:absolute;left:12px;top:12px;z-index:2}
+.gfull{position:absolute;inset:0;z-index:4;background:var(--land)}
+.gfull iframe{width:100%;height:100%;border:0;display:block}
+.carousel{position:absolute;left:0;right:0;bottom:14px;z-index:6;display:flex;gap:10px;overflow-x:auto;padding:0 14px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.carousel::-webkit-scrollbar{display:none}
+.card{flex:none;width:78%;max-width:300px;scroll-snap-align:center;background:var(--bg);border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.18);padding:12px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;border:2px solid transparent;transition:border-color .2s,transform .2s}
+.card.on{border-color:var(--acc);transform:translateY(-3px)}
+.card .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex:none}
+.card .ic svg{width:19px;height:19px}
+.card .nm{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .ln{font-size:12.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .more{border:0;background:var(--chip);border-radius:9px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer;flex:none}
+.offtag{position:absolute;left:12px;bottom:118px;z-index:6;background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px}
 /* sheet */
 #scrim{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .25s}
 #scrim.open{opacity:1;pointer-events:auto}
@@ -575,10 +587,9 @@ function viewInfo(){
   section('Emergency','',`<div class="kv"><b>911</b><span class="grow">Police, fire, ambulance</span><a class="btn" href="tel:911">Call</a></div><div class="kv"><b>078</b><span class="grow">Tourist help & Ángeles Verdes roadside</span><a class="btn" href="tel:078">Call</a></div><div class="kv"><b>Hotel</b><span class="grow">+52 612 145 0547</span><a class="btn" href="tel:+526121450547">Call</a></div>`+['pharm1','pharm2'].map((id,i)=>row(P[id],{i})).join(''))+
   section('Money, gas & driving','',['atm','gas1','gas2'].map((id,i)=>row(P[id],{i})).join('')+`<div class="note">Carry pesos for tacos and tips. Decline the ATM’s own exchange rate. Avoid Hwy 19 after dark if you can (no lights, wandering cattle). Todos Santos is 1 hour ahead of Portland.</div>`)+
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
-  section('Google Maps','When you have signal, the map uses Google Maps if a key is added. Otherwise it uses the saved offline map.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><input type="text" id="gkeyIn" value="${esc(LS.get('gkey',''))}" placeholder="Paste a Google Maps API key" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="actions"><button class="btn pri" data-act="savekey">Save key</button>${gkey()?'<span class="mut small" style="align-self:center">✅ Key saved</span>':''}</div></div>`)+
-  section('Offline map','Saves the map of Todos Santos to Cerritos (about 15 MB). Do it on Wi-Fi.',`<div class="kv"><span class="grow" id="tileStatus">${LS.get('tilesSaved',0)?'✅ Saved '+ago(LS.get('tilesSaved',0)):'Not saved yet'}</span><button class="btn pri" data-act="savetiles">${LS.get('tilesSaved',0)?'Update':'Save map'}</button></div>`)+
+  section('Offline maps','With signal, the Map tab is Google Maps. To have Google Maps work with no signal too, download the area in the Google Maps app before you go.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:14.5px"><ol style="margin:0;padding-left:20px;line-height:1.6"><li>Open the <b>Google Maps app</b> on Wi-Fi.</li><li>Tap your profile picture → <b>Offline maps</b> → <b>Select your own map</b>.</li><li>Fit the box from <b>Todos Santos down to Cerritos</b>, then <b>Download</b>.</li></ol><div class="actions"><a class="btn pri" href="https://www.google.com/maps/@23.40,-110.20,11z" target="_blank" rel="noopener">Open Google Maps</a></div><p class="mut small" style="margin:8px 0 0">Directions buttons in this app open Google Maps, so they’ll use that download. With no signal, this app’s Map tab shows a simple sketch map with your places and GPS dot.</p></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 4.1.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 5.</div>`);
 }
 
 /* ================= sheet ================= */
@@ -650,20 +661,28 @@ const tileUrl=(z,x,y,dark)=>(dark?TD:TL).replace('{s}','abcd'[(x+y)%4]).replace(
 const mapState={el:null,lat:LS.get('mapc',[23.43,-110.212])[0],lon:LS.get('mapc',[23.43,-110.212])[1],z:LS.get('mapz',12.2),tiles:new Map(),raf:0,pins:[],moved:false};
 const ZMIN=9,ZMAX=18;
 function clearTiles(){for(const [,im] of mapState.tiles)im.remove();mapState.tiles.clear()}
+function mapList(){return PLACES.filter(p=>p.lat!=null&&(state.allPins||p.t===state.tab)).sort(byDistance)}
+function gUrl(o){return 'https://maps.google.com/maps?q='+encodeURIComponent(o.q)+'&z='+Math.round(o.z)+'&output=embed'}
+function gPlace(p){return {q:p.pid&&!p.approx?`${p.n.replace(/\s*[·(].*$/,'')}, ${p.lat.toFixed(5)},${p.lon.toFixed(5)}`:`${p.lat.toFixed(5)},${p.lon.toFixed(5)}`,z:p.t==='do'&&p.lat>23.6?13:16}}
+const GAREA={town:{q:'Hacienda Todos Los Santos, Todos Santos',z:15},pesc:{q:'El Pescadero, Baja California Sur',z:13},all:{q:'Todos Santos, Baja California Sur',z:11}};
+const online=()=>navigator.onLine!==false;
 function mapView(){
-  const t=state.tab;
-  return `<div class="mapwrap" id="mapwrap"><div id="gdiv" style="position:absolute;inset:0;z-index:4;display:none"></div><div class="tmap" id="tmap"><svg class="base" id="tbase"></svg><div class="tiles" id="ttiles"></div><div class="pins" id="tpins"></div><div id="tme"></div></div>
-  <div class="mtop"><span class="wxp" data-act="mode" data-k="list">${miniWx()}</span><button class="${!state.allPins?'on':''}" data-act="pins" data-v="0">${TNAME[t]}</button><button class="${state.allPins?'on':''}" data-act="pins" data-v="1">Everything</button><button data-act="fly" data-k="town">Town</button><button data-act="fly" data-k="pesc">Pescadero</button><button data-act="fly" data-k="all">Whole area</button></div>
-  <div class="mctl"><button class="g" data-act="gmap" title="${useGoogle()?'Switch to offline map':'Google Maps'}">${useGoogle()?'G':'G'}</button><button data-act="zin">+</button><button data-act="zout">−</button><button data-act="gps" title="Where am I">${IC.locate.replace('<svg','<svg width="22" height="22"')}</button></div>
-  <div class="attr">© OpenStreetMap · © CARTO</div>
-  </div>`;
+  const t=state.tab,on=online(),list=mapList();
+  const cards=list.map(p=>{const st=status(p);return `<div class="card${p.id===state.sel?' on':''}" data-act="focus" data-id="${p.id}"><div class="ic" style="background:var(--t-${p.t});color:var(--c-${p.t})">${iconFor(p)}</div><div class="grow"><div class="nm">${esc(p.n)}</div><div class="ln">${st?esc(st.txt)+' · ':''}${travel(p)}</div></div><button class="more" data-act="open" data-id="${p.id}">Info</button></div>`}).join('');
+  return `<div class="mapwrap" id="mapwrap">
+   ${on?`<div class="gfull"><iframe id="gfr" title="Google Maps" loading="eager" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>`:''}
+   <div class="tmap" id="tmap"${on?' style="visibility:hidden"':''}><svg class="base" id="tbase"></svg><div class="tiles" id="ttiles"></div><div class="pins" id="tpins"></div><div id="tme"></div></div>
+   <div class="mtop"><span class="wxp" data-act="mode" data-k="list">${miniWx()}</span><button class="${!state.allPins?'on':''}" data-act="pins" data-v="0">${TNAME[t]}</button><button class="${state.allPins?'on':''}" data-act="pins" data-v="1">Everything</button><button data-act="fly" data-k="town">Town</button><button data-act="fly" data-k="pesc">Pescadero</button><button data-act="fly" data-k="all">Whole area</button></div>
+   ${on?`<div class="mctl" style="bottom:120px"><button class="g" data-act="gapp" title="Open in Google Maps app">↗</button></div>`:`<div class="mctl" style="bottom:120px"><button data-act="zin">+</button><button data-act="zout">−</button><button data-act="gps" title="Where am I">${IC.locate.replace('<svg','<svg width="22" height="22"')}</button></div><div class="offtag">Offline sketch map</div>`}
+   <div class="carousel" id="carousel">${cards}</div></div>`;
 }
 function miniWx(){const w=wxData(),d=dayObj();let tx='';if(w){const i=w.daily.time.indexOf(d.d);if(i>=0&&w.daily.temperature_2m_max&&w.daily.temperature_2m_max[i]!=null){const c=w.current&&isToday(d.k)?w.current:null;tx=Math.round(c&&c.temperature_2m!=null?c.temperature_2m:w.daily.temperature_2m_max[i])+'°'}}const s=sunTimes(d.d);return `${tx?tx+' · ':''}🌅 ${fmt(s.set)}`}
 function mapInit(){
   const el=$('#tmap');if(!el)return;mapState.el=el;clearTiles();mapState.pins=[];
   const top=$('#top').getBoundingClientRect().height;document.documentElement.style.setProperty('--toph',top+'px');
-  mapPins(false);mapRender();bindMapGestures(el);gm=null;gmMarkers=[];gmMe=null;
-  if(useGoogle())loadGoogle().then(()=>{if($('#gdiv'))gmInit()}).catch(()=>toast('Google Maps didn’t load. Showing the offline map'));
+  mapPins(false);mapRender();bindMapGestures(el);gm=null;
+  const fr=$('#gfr');if(fr){const p=state.sel&&P[state.sel];fr.src=gUrl(p&&p.lat!=null?gPlace(p):GAREA[state.tab==='do'||state.allPins?'all':'town'])}
+  if(state.sel){const c=document.querySelector(`.card[data-id="${state.sel}"]`);if(c)c.scrollIntoView({inline:'center',block:'nearest'})}
   if(LS.get('gpsOk',false))startGps(false);
 }
 function worldSize(){return 256*Math.pow(2,mapState.z)}
@@ -674,7 +693,7 @@ function mapRender(){
   const zi=Math.max(3,Math.min(ZMAX,Math.round(z))),n=1<<zi,sc=Math.pow(2,z-zi),ts=256*sc;
   const x0=Math.floor(left/ts),x1=Math.floor((left+W)/ts),y0=Math.max(0,Math.floor(top/ts)),y1=Math.min(n-1,Math.floor((top+H)/ts));
   const need=new Set(),dark=isDark(),layer=$('#ttiles');
-  for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){
+  if(false)for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){
     const key=zi+'/'+x+'/'+y;need.add(key);
     if(!mapState.tiles.has(key)){const im=new Image();im.className='tile';im.alt='';im.dataset.z=zi;im.dataset.x=x;im.dataset.y=y;
       im.onload=()=>{im.classList.add('ok');schedule()};
@@ -691,7 +710,8 @@ function mapRender(){
   // fallback coastline (visible only where tiles are missing)
   const P2=([la,lo])=>[(mx(lo)*ws-left).toFixed(1),(my(la)*ws-top).toFixed(1)];
   const c=COAST.map(P2);
-  $('#tbase').innerHTML=`<path d="M-2000,-2000 L${c[0][0]},-2000 ${c.map(p=>'L'+p.join(',')).join(' ')} L${c[c.length-1][0]},${H+2000} L-2000,${H+2000}Z" fill="var(--seacol)"/><path d="M${ROAD.map(P2).map(p=>p.join(',')).join(' L')}" fill="none" stroke="var(--line)" stroke-width="4" stroke-linecap="round"/>`;
+  const T=(la,lo,n)=>{const q=P2([la,lo]);return `<text x="${q[0]}" y="${q[1]}" text-anchor="middle" font-size="12" font-weight="800" letter-spacing="2" fill="var(--mut)" opacity=".7">${n}</text>`};
+  $('#tbase').innerHTML=`<path d="M-2000,-2000 L${c[0][0]},-2000 ${c.map(p=>'L'+p.join(',')).join(' ')} L${c[c.length-1][0]},${H+2000} L-2000,${H+2000}Z" fill="var(--seacol)"/><path d="M${c.map(p=>p.join(',')).join(' L')}" fill="none" stroke="var(--sea)" stroke-opacity=".35" stroke-width="2"/><path d="M${ROAD.map(P2).map(p=>p.join(',')).join(' L')}" fill="none" stroke="#e2b65a" stroke-opacity=".8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${z<14.5?T(23.457,-110.205,'TODOS SANTOS')+T(23.385,-110.165,'EL PESCADERO')+T(23.322,-110.160,'CERRITOS'):''}${T(23.40,-110.27,'Pacific')}`;
   for(const pin of mapState.pins){const X=mx(pin.p.lon)*ws-left,Y=my(pin.p.lat)*ws-top;pin.el.style.transform=`translate(${X.toFixed(1)}px,${Y.toFixed(1)}px)`;pin.el.style.display=(X<-60||X>W+60||Y<-60||Y>H+60)?'none':'';pin.lbl.style.display=(z>=14.6||pin.p.id==='hotel'||pin.p.id===state.sel)?'':'none'}
   const me=$('#tme');if(me){const g=state.gps;if(g){me.className='me';me.style.position='absolute';me.style.transform=`translate(${(mx(g.lon)*ws-left).toFixed(1)}px,${(my(g.lat)*ws-top).toFixed(1)}px)`}else me.className=''}
   LS.set('mapc',[mapState.lat,mapState.lon]);LS.set('mapz',mapState.z);
@@ -779,13 +799,15 @@ document.addEventListener('click',e=>{
   else if(a==='quiet'){state.quiet=el.dataset.v==='1';render()}
   else if(a==='open')openSheet(id);
   else if(a==='fav'||a==='done'){const s=a==='fav'?favs:done;const on=!s.has(id);on?s.add(id):s.delete(id);LS.set(a==='fav'?'favs':'done',[...s]);if(on)burst(el);openSheet(id);const b=$('#sheet [data-act=fav]');if(a==='fav'&&b)b.classList.add('pop');if(state.mode==='list')render()}
-  else if(a==='showmap'){const p=P[id];closeSheet();state.tab=p.t;state.mode='map';mapState.lat=p.lat;mapState.lon=p.lon;mapState.z=Math.max(15,mapState.z);render();state.sel=id;mapPins(true)}
+  else if(a==='showmap'){const p=P[id];closeSheet();state.tab=p.t;state.allPins=false;state.mode='map';state.sel=id;mapState.lat=p.lat;mapState.lon=p.lon;mapState.z=Math.max(15,mapState.z);render()}
     else if(a==='gmap'){
     if(gm){LS.set('mapProv','offline');toast('Offline map');render()}
     else if(gkey()){if(!navigator.onLine){toast('Google Maps needs signal');return}LS.set('mapProv','google');toast('Google Maps');render()}
     else{toast('Add a Google key in Info to show Google Maps here');window.open(`https://www.google.com/maps/@${mapState.lat},${mapState.lon},${Math.round(mapState.z)}z`,'_blank')}}
-  else if(a==='pins'){state.allPins=el.dataset.v==='1';document.querySelectorAll('[data-act=pins]').forEach(b=>b.classList.toggle('on',b===el));mapPins(false)}
-  else if(a==='fly'){const f=FLY[k];flyTo(f[0],f[1],f[2])}
+  else if(a==='pins'){state.allPins=el.dataset.v==='1';render()}
+  else if(a==='fly'){const fr=$('#gfr');if(fr){fr.src=gUrl(GAREA[k])}else{const f=FLY[k];flyTo(f[0],f[1],f[2])}}
+  else if(a==='focus'){const p=P[id];state.sel=id;document.querySelectorAll('.card').forEach(c=>c.classList.toggle('on',c.dataset.id===id));el.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});const fr=$('#gfr');if(fr)fr.src=gUrl(gPlace(p));else{flyTo(p.lat,p.lon,Math.max(mapState.z,15));mapPins(true)}}
+  else if(a==='gapp'){const p=state.sel&&P[state.sel];window.open(p?`https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}`:`https://www.google.com/maps/@23.43,-110.21,12z`,'_blank')}
   else if(a==='zin'||a==='zout')zoomAnim(a==='zin'?1:-1);
   else if(a==='gps'){LS.set('gpsOk',true);startGps(true)}
   else if(a==='theme'){const i=THEMES.indexOf(themeMode());LS.set('theme2',THEMES[(i+1)%THEMES.length]);applyTheme();toast({auto:'Theme follows your phone/browser',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]);if(state.tab==='info'&&state.mode==='list')render()}
@@ -821,8 +843,8 @@ async function refreshWx(manual){
   catch(e){if(manual)toast('No connection. Showing the saved forecast')}
 }
 async function offlineStatus(){const el=$('#offl');if(!el)return;let t='';if('serviceWorker' in navigator){const r=await navigator.serviceWorker.getRegistration();t=r&&r.active?'✅ App saved for offline use':'⏳ Not saved yet. Keep it open for a few seconds on Wi-Fi'}else t='This browser can’t save the app offline';el.textContent=t}
-addEventListener('online',()=>{refreshWx();if(state.mode==='map'&&!gm&&useGoogle())render()});
-addEventListener('offline',()=>{if(state.mode==='map'&&gm){gm=null;render();toast('Offline. Switched to the saved map')}});
+addEventListener('online',()=>{refreshWx();if(state.mode==='map'){render();toast('Back online. Google Maps')}});
+addEventListener('offline',()=>{if(state.mode==='map'){render();toast('Offline. Showing the sketch map')}});
 setInterval(()=>{applyTheme();if(state.mode==='list'&&state.tab!=='info'&&!$('#sheet').classList.contains('open')){const y=scrollY;const h=document.querySelector('.hero');if(h){const tmp=document.createElement('div');tmp.innerHTML=heroHtml();h.replaceWith(tmp.firstElementChild);const dz=document.querySelector('.days');if(dz&&tmp.children[0])dz.replaceWith(tmp.children[0]);scrollTo(0,y)}}},60000);
 
 applyTheme();render();
