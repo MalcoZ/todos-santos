@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff" id="themeColor">
+<meta name="theme-color" content="#f8f5f0" id="themeColor">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Todos Santos">
@@ -13,9 +13,9 @@
 <title>Todos Santos</title>
 <style>
 :root{
-  --bg:#ffffff;--bg2:#f7f5f2;--ink:#16181a;--mut:#6f7377;--line:#ebe8e3;--chip:#f2efea;
+  --bg:#f8f5f0;--bg2:#efeae2;--ink:#1b1c1e;--mut:#6c6f73;--line:#e3ddd3;--chip:#ebe5dc;
   --acc:#ef5a3c;--sea:#168f9c;--good:#1f9d5a;--warn:#d9822b;--bad:#d2452b;
-  --land:#f3efe7;--seacol:#bfe0ea;--hdr:rgba(255,255,255,.92);--navbg:rgba(255,255,255,.95);
+  --land:#efe9df;--seacol:#bfe0ea;--hdr:rgba(248,245,240,.93);--navbg:rgba(250,247,243,.96);
   --c-eat:#ef5a3c;--c-beach:#168f9c;--c-do:#7b5bd6;--c-night:#3b4cc0;--c-info:#5f6670;
   --t-eat:rgba(239,90,60,.12);--t-beach:rgba(22,143,156,.12);--t-do:rgba(123,91,214,.12);--t-night:rgba(59,76,192,.12);--t-info:rgba(95,102,112,.12);
 }
@@ -263,6 +263,17 @@ const PLACES=[
  {id:'eco',t:'do',n:'Todos Santos Eco Adventures',d:'Sierra de la Laguna hikes to freshwater pools, horseback rides and whale trips. Book ahead (your wife can call in Spanish). Not on the map.'},
  {id:'loop',t:'do',n:'Pescadero farm loop',lat:23.3700,lon:-110.1760,approx:true,quiet:true,d:'Drive south on Hwy 19 to Baja Beans for coffee, then the Agricole farm store, carnitas at Miguel’s, and finish at Cerritos or San Pedrito for sunset.'},
  {id:'whale',t:'do',n:'Whale watching (early season)',d:'You’re here at the very start of the season, so sightings are possible but not guaranteed. Watch from La Cachora or Punta Lobos, or ask Eco Adventures about a boat.'},
+ {id:'turtles',t:'do',n:'Baby turtle release · Tortugueros Las Playitas',lat:23.46529,lon:-110.25666,phone:'+526122192650',pid:'ChIJFSEPAUEBr4YR6diNLhe8_ck',hours:D('5–7 pm'),quiet:true,sunset:true,dirt:true,d:'Volunteer sea-turtle hatchery on the beach north of town. When babies have hatched, they release them at sunset, often with whales spouting offshore. Sources differ on whether releases start mid-November or in December, so call or ask first. Free, donations welcome.'},
+ {id:'turtles2',t:'do',n:'Release a hatchling · Grupo Tortuguero',lat:23.44636,lon:-110.24434,phone:'+526122034192',pid:'ChIJtbSDOvwDr4YRdbjfTYQgeos',quiet:true,dirt:true,d:'Smaller turtle group at Playa La Máquina, close to town. Visitors have released a hatchling themselves for about 150 pesos per person in cash, around 4:30 pm. Call first to make sure a release is happening.'},
+ {id:'whaleshark',drive:'About 1 h 10 min drive',t:'do',n:'Swim with whale sharks · La Paz',lat:24.1546,lon:-110.3253,approx:true,d:'The big day trip. Whale sharks feed in La Paz Bay roughly November to April. Authorities open the season in mid to late November and assign operating days, so book ahead and keep a backup day. Tour shops cluster on Calle Topete (La Paz Whale Shark VIP, Tuna Tuna, MeXplore). Skip sunscreen in the water.'},
+ {id:'malecon',drive:'About 1 h 10 min drive',t:'do',n:'La Paz malecón at sunset',lat:24.15539,lon:-110.32272,pid:'ChIJJ2HXcVHTr4YRegW5uc0cFCI',d:'Long waterfront promenade on the Sea of Cortez with sculptures, street food and a real local evening crowd. Pairs well with the whale sharks. Remember the drive back on Hwy 19 is in the dark.'},
+ {id:'cultura',t:'do',n:'Centro Cultural Néstor Agúndez',lat:23.45095,lon:-110.22347,pid:'ChIJvanK36cGr4YRjP54jrn-vEQ',hours:D('8 am–8 pm'),quiet:true,d:'Old schoolhouse turned museum, two blocks from the plaza. Revolutionary-era murals, a garden, and the town’s story from the missions through sugar cane and fishing to today. Tiny entry fee.'},
+ {id:'teatro',t:'do',n:'Teatro Márquez de León',lat:23.45039,lon:-110.22542,pid:'ChIJpZmMP6gGr4YRpufX-AydMVk',hours:H('9 am–2 pm','8 am–7 pm','8 am–7 pm','8 am–7 pm','8 am–7 pm','8 am–7 pm','9 am–2 pm'),d:'Restored 1944 cinema on the plaza, now used for film festival screenings and shows. Peek inside, and check the door for posters of anything on this week.'},
+ {id:'tinajas',t:'do',n:'Viñedo Las Tinajas winery',lat:23.45879,lon:-110.22025,phone:'+526242642572',pid:'ChIJV9Ve_kUHr4YRukwaFTMQFYo',hours:D('11 am–7 pm'),quiet:true,d:'Small vineyard just outside town. Whites, rosé, a mango “wine” and tapas boards, with friendly winery dogs. Sunday 11/29 has an open mic at 5 pm.'},
+ {id:'surf',t:'do',n:'Surf lesson · CRT Surf School',lat:23.33007,lon:-110.17632,phone:'+526121479243',pid:'ChIJCY6IB_Aar4YRfcxpLS37ofI',hours:D('8 am–6 pm'),d:'Highly rated school at Cerritos (blue umbrellas in front of Barracuda). The owners are lifeguards, and reviewers say a lesson includes an umbrella and two lounge chairs for the rest of the day. Book on WhatsApp.'},
+ {id:'triunfo',drive:'About 1 h drive',t:'do',n:'El Triunfo mining town',lat:23.80213,lon:-110.10850,pid:'ChIJBdi3WxG7r4YR9Lx48YY5IdU',hours:H('10 am–5 pm','10 am–5 pm',null,'10 am–5 pm','10 am–5 pm','10 am–5 pm','10 am–5 pm'),quiet:true,d:'19th-century silver town about an hour inland. La Ramona smokestack, the Ruta de Plata mining museum (closed Tuesdays), a quirky music museum and a newer cowboy museum. Lunch at El Minero.'},
+ {id:'tecolote',t:'do',n:'Tecolote Bookstore',lat:23.44895,lon:-110.22447,phone:'+526121450295',pid:'ChIJ2SjeDagGr4YRHgm8RUJsJLw',hours:D('11 am–4 pm'),quiet:true,d:'Beloved bilingual bookstore with local authors, cards and crafts. The owner is a great source of local tips.'},
+ {id:'pastora',t:'beach',n:'Playa La Pastora',lat:23.48839,lon:-110.27609,pid:'ChIJI1APXvoFr4YRmdnSGIogu7g',quiet:true,sunset:true,dirt:true,d:'Big, nearly empty surf beach north of town near The Green Room. Locals call it one of the best sunsets around, and you might spot whales. Not for swimming.'},
  // NIGHT
  {id:'brew',t:'night',n:'Todos Santos Brewing',lat:23.45017,lon:-110.22203,phone:'+526121452023',pid:'ChIJrW0IjacGr4YR6dvxPxThLF8',hours:H('11 am–9 pm','12–9 pm','12–9 pm','12–9 pm','12–9 pm','12–9 pm','12–11 pm'),d:'Craft beer and good burgers, with live music, trivia and karaoke on a rotating schedule. A Latin and dance night has run on Tuesdays at 6:30.'},
  {id:'rose',t:'night',n:'The Dirty Rose',lat:23.44553,lon:-110.22502,pid:'ChIJV7nalagFr4YRhTLiLMEPT-E',hours:H(null,null,null,'7 pm–12 am','7 pm–12 am','7 pm–12 am','7 pm–12 am'),quiet:true,d:'Speakeasy behind a curtain, very close to the hotel. Considered the best cocktails in town, with a local crowd. Open Wednesday to Saturday.'},
@@ -413,8 +424,8 @@ const state={tab:TABS.includes(LS.get('tab2','eat'))?LS.get('tab2','eat'):'eat',
 const favs=new Set(LS.get('favs',[])),done=new Set(LS.get('done',[]));
 const isToday=k=>k===tsTodayKey();
 const dayObj=()=>DAYS.find(x=>x.k===state.day);
-function here(){const g=state.gps;if(g&&g.lat<23.6&&g.lat>23.2&&g.lon>-110.45&&g.lon<-110.0)return g;return null}
-function travel(p,from){if(p.lat==null)return '';const road=km(from||here()||HOTEL,p)*1.35;if(road<1.6)return Math.max(2,Math.round(road/4.8*60))+' min walk';return Math.round(road/45*60+3+(p.dirt?8:0))+' min drive'}
+function here(){const g=state.gps;if(g&&g.lat<24.4&&g.lat>23.2&&g.lon>-110.45&&g.lon<-110.0)return g;return null}
+function travel(p,from){if(p.lat==null)return '';if(p.drive&&!from&&!here())return p.drive;const d=km(from||here()||HOTEL,p);if(d>30){const m=Math.round(d*1.2/80*60/5)*5;return (m>=60?Math.floor(m/60)+' h '+(m%60?m%60+' min':''):m+' min')+' drive'}const road=d*1.35;if(road<1.6)return Math.max(2,Math.round(road/4.8*60))+' min walk';return Math.round(road/45*60+3+(p.dirt?8:0))+' min drive'}
 
 /* ================= hours ================= */
 function parseRange(h){
@@ -455,7 +466,7 @@ function wxIcon(code,isDay,anim){
 }
 function skyGradient(){
   const s=sunTimes(tsDateStr()),t=tsMinutes();
-  if(t<s.rise-40||t>s.set+50)return ['linear-gradient(165deg,#0b1633 0%,#1b2a5c 55%,#33407a 100%)','#0b1633'];
+  if(t<s.rise-40||t>s.set+50)return isDark()?['linear-gradient(165deg,#0b1633 0%,#1b2a5c 55%,#33407a 100%)','#0b1633']:['linear-gradient(165deg,#34508f 0%,#5a6fb3 55%,#8f93cf 100%)','#34508f'];
   if(t<s.rise+60)return ['linear-gradient(165deg,#f4a17f 0%,#ee8fa3 45%,#7f9fd8 100%)','#f4a17f'];
   if(t<s.set-90)return ['linear-gradient(165deg,#1f7fc4 0%,#3d9edb 55%,#6cbbe6 100%)','#1f7fc4'];
   if(t<s.set)return ['linear-gradient(165deg,#f39a3d 0%,#ea6a4a 55%,#b9437a 100%)','#f39a3d'];
@@ -564,9 +575,10 @@ function viewInfo(){
   section('Emergency','',`<div class="kv"><b>911</b><span class="grow">Police, fire, ambulance</span><a class="btn" href="tel:911">Call</a></div><div class="kv"><b>078</b><span class="grow">Tourist help & Ángeles Verdes roadside</span><a class="btn" href="tel:078">Call</a></div><div class="kv"><b>Hotel</b><span class="grow">+52 612 145 0547</span><a class="btn" href="tel:+526121450547">Call</a></div>`+['pharm1','pharm2'].map((id,i)=>row(P[id],{i})).join(''))+
   section('Money, gas & driving','',['atm','gas1','gas2'].map((id,i)=>row(P[id],{i})).join('')+`<div class="note">Carry pesos for tacos and tips. Decline the ATM’s own exchange rate. Avoid Hwy 19 after dark if you can (no lights, wandering cattle). Todos Santos is 1 hour ahead of Portland.</div>`)+
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
+  section('Google Maps','When you have signal, the map uses Google Maps if a key is added. Otherwise it uses the saved offline map.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><input type="text" id="gkeyIn" value="${esc(LS.get('gkey',''))}" placeholder="Paste a Google Maps API key" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="actions"><button class="btn pri" data-act="savekey">Save key</button>${gkey()?'<span class="mut small" style="align-self:center">✅ Key saved</span>':''}</div></div>`)+
   section('Offline map','Saves the map of Todos Santos to Cerritos (about 15 MB). Do it on Wi-Fi.',`<div class="kv"><span class="grow" id="tileStatus">${LS.get('tilesSaved',0)?'✅ Saved '+ago(LS.get('tilesSaved',0)):'Not saved yet'}</span><button class="btn pri" data-act="savetiles">${LS.get('tilesSaved',0)?'Update':'Save map'}</button></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[LS.get('theme','auto')]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 4.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 4.1.</div>`);
 }
 
 /* ================= sheet ================= */
@@ -578,7 +590,7 @@ function openSheet(id){
   <p style="margin:12px 0 0">${esc(p.d)}</p>
   <div class="actions">${p.lat!=null?`<a class="btn pri" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">Directions</a><button class="btn" data-act="showmap" data-id="${id}">Show on map</button>`:''}${p.phone?`<a class="btn" href="tel:${p.phone}">Call</a>`:''}<button class="btn ${done.has(id)?'on':''}" data-act="done" data-id="${id}">${done.has(id)?'✓ Been':'Been here?'}</button></div>
   ${hrs}${MENUS[p.id]||PRICE_NOTES[p.id]?`<div class="hl" style="padding-top:0">${menuHtml(p)}</div>`:''}
-  <div class="hl"><b>Reviews</b> <span class="mut small">(needs signal)</span><div class="actions" style="margin-top:6px"><a class="btn" href="${p.pid?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n)}&query_place_id=${p.pid}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+' Todos Santos')}`}" target="_blank" rel="noopener">Google</a><a class="btn" href="https://www.tripadvisor.com/Search?q=${encodeURIComponent(p.n.replace(/\(.*\)/,'')+' Todos Santos')}" target="_blank" rel="noopener">Tripadvisor</a>${p.lat!=null?`<button class="btn" data-act="gplace" data-id="${id}">Google Maps view</button>`:''}</div></div>
+  <div class="hl"><b>Reviews</b> <span class="mut small">(needs signal)</span><div class="actions" style="margin-top:6px"><a class="btn" href="${p.pid?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n)}&query_place_id=${p.pid}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+' Todos Santos')}`}" target="_blank" rel="noopener">Google</a><a class="btn" href="https://www.tripadvisor.com/Search?q=${encodeURIComponent(p.n.replace(/\(.*\)/,'')+' Todos Santos')}" target="_blank" rel="noopener">Tripadvisor</a></div></div>
   <div class="hl"><b>Your note</b><input type="text" id="pnote" value="${esc(note)}" placeholder="What did you order? Worth coming back?" style="margin-top:6px"></div>`;
   $('#sheet').classList.add('open');$('#scrim').classList.add('open');
   $('#pnote').addEventListener('input',e=>{const n=LS.get('pnote',{});n[id]=e.target.value;LS.set('pnote',n)});
@@ -592,11 +604,41 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');
 function burst(el){const b=el.getBoundingClientRect();const cx=b.left+b.width/2,cy=b.top+b.height/2;const cols=['#f5b400','#ef5a3c','#168f9c','#7b5bd6'];for(let i=0;i<10;i++){const s=document.createElement('span');s.className='burst';const a=i/10*Math.PI*2,r=26+Math.random()*12;s.style.left=cx+'px';s.style.top=cy+'px';s.style.background=cols[i%4];s.style.setProperty('--dx',Math.cos(a)*r+'px');s.style.setProperty('--dy',Math.sin(a)*r+'px');document.body.appendChild(s);setTimeout(()=>s.remove(),700)}if(navigator.vibrate)navigator.vibrate(8)}
 
 /* ================= theme ================= */
-const THEMES=['auto','light','dark','sunset'];
-function isDark(){const m=LS.get('theme','auto');if(m==='light')return false;if(m==='dark')return true;if(m==='sunset'){const s=sunTimes(tsDateStr()),t=tsMinutes();return t>=s.set||t<s.rise}return matchMedia('(prefers-color-scheme: dark)').matches}
+const THEMES=['light','dark','auto','sunset'];const themeMode=()=>LS.get('theme2','light');
+function isDark(){const m=themeMode();if(m==='light')return false;if(m==='dark')return true;if(m==='sunset'){const s=sunTimes(tsDateStr()),t=tsMinutes();return t>=s.set||t<s.rise}return matchMedia('(prefers-color-scheme: dark)').matches}
 let lastDark=null;
-function applyTheme(){const dk=isDark();document.documentElement.dataset.theme=dk?'dark':'light';$('#themeColor').setAttribute('content',dk?'#0e1113':'#ffffff');const m=LS.get('theme','auto');$('#themeBtn').textContent=m==='dark'?'🌙':m==='light'?'☀️':m==='sunset'?'🌅':'🌓';if(lastDark!==null&&lastDark!==dk&&mapState.el){clearTiles();mapRender()}lastDark=dk}
+function applyTheme(){const dk=isDark();document.documentElement.dataset.theme=dk?'dark':'light';$('#themeColor').setAttribute('content',dk?'#0e1113':'#f8f5f0');const m=themeMode();$('#themeBtn').textContent=m==='dark'?'🌙':m==='light'?'☀️':m==='sunset'?'🌅':'🌓';if(lastDark!==null&&lastDark!==dk&&mapState.el){clearTiles();mapRender()}lastDark=dk}
 try{const mq=matchMedia('(prefers-color-scheme: dark)');if(mq.addEventListener)mq.addEventListener('change',applyTheme);else if(mq.addListener)mq.addListener(applyTheme)}catch(e){}
+
+/* ================= Google Maps (online, needs a key) ================= */
+const GMAPS_KEY='';
+const gkey=()=>(LS.get('gkey','')||GMAPS_KEY||'').trim();
+const useGoogle=()=>navigator.onLine&&!!gkey()&&LS.get('mapProv','google')==='google';
+let gm=null,gmMarkers=[],gmMe=null,gmLoading=null;
+const PINCOL={eat:'#ef5a3c',beach:'#168f9c',do:'#7b5bd6',night:'#3b4cc0',info:'#5f6670'};
+function loadGoogle(){
+  if(window.google&&google.maps&&google.maps.Map)return Promise.resolve();
+  if(gmLoading)return gmLoading;
+  gmLoading=new Promise((res,rej)=>{window.__gmInit=()=>res();window.gm_authFailure=()=>{toast('Google didn’t accept the key. Using the offline map');LS.set('mapProv','offline');gm=null;if(state.mode==='map')render()};
+    const sc=document.createElement('script');sc.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(gkey())+'&callback=__gmInit&v=weekly';sc.async=true;sc.onerror=()=>{gmLoading=null;rej()};document.head.appendChild(sc)});
+  return gmLoading;
+}
+const GDARK=[{elementType:'geometry',stylers:[{color:'#1d2226'}]},{elementType:'labels.text.fill',stylers:[{color:'#9aa0a6'}]},{elementType:'labels.text.stroke',stylers:[{color:'#1d2226'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#2f363b'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#11292f'}]},{featureType:'poi',stylers:[{visibility:'off'}]}];
+function gmInit(){
+  const div=$('#gdiv');if(!div)return;div.style.display='block';$('.attr').style.display='none';
+  gm=new google.maps.Map(div,{center:{lat:mapState.lat,lng:mapState.lon},zoom:Math.round(mapState.z),disableDefaultUI:true,clickableIcons:true,gestureHandling:'greedy',styles:isDark()?GDARK:null});
+  gm.addListener('idle',()=>{const c=gm.getCenter();mapState.lat=c.lat();mapState.lon=c.lng();mapState.z=gm.getZoom();LS.set('mapc',[mapState.lat,mapState.lon]);LS.set('mapz',mapState.z)});
+  gmPins();gmMeUpdate();const g=$('[data-act=gmap]');if(g){g.textContent='G';g.title='Switch to offline map'}
+}
+function pinSvg(col,star){return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40"><path d="M15 39C15 39 2 24 2 15a13 13 0 0 1 26 0c0 9-13 24-13 24z" fill="${col}" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="15" r="${star?5.5:4.5}" fill="#fff"/></svg>`)}
+function gmPins(){
+  if(!gm)return;gmMarkers.forEach(m=>m.setMap(null));gmMarkers=[];
+  PLACES.filter(p=>p.lat!=null&&(state.allPins||p.t===state.tab||p.id==='hotel')).forEach((p,i)=>{
+    const m=new google.maps.Marker({map:gm,position:{lat:p.lat,lng:p.lon},title:p.n,optimized:true,animation:google.maps.Animation.DROP,
+      icon:{url:pinSvg(p.id==='hotel'?'#ef5a3c':PINCOL[p.t],p.id==='hotel'),scaledSize:new google.maps.Size(30,40),anchor:new google.maps.Point(15,39)}});
+    m.addListener('click',()=>openSheet(p.id));gmMarkers.push(m)});
+}
+function gmMeUpdate(){if(!gm||!state.gps)return;const pos={lat:state.gps.lat,lng:state.gps.lon};if(!gmMe)gmMe=new google.maps.Marker({map:gm,position:pos,zIndex:999,icon:{path:google.maps.SymbolPath.CIRCLE,scale:8,fillColor:'#4285f4',fillOpacity:1,strokeColor:'#fff',strokeWeight:3}});else gmMe.setPosition(pos)}
 
 /* ================= tile map ================= */
 const mx=lon=>(lon+180)/360;
@@ -610,17 +652,18 @@ const ZMIN=9,ZMAX=18;
 function clearTiles(){for(const [,im] of mapState.tiles)im.remove();mapState.tiles.clear()}
 function mapView(){
   const t=state.tab;
-  return `<div class="mapwrap" id="mapwrap"><div class="tmap" id="tmap"><svg class="base" id="tbase"></svg><div class="tiles" id="ttiles"></div><div class="pins" id="tpins"></div><div id="tme"></div></div>
+  return `<div class="mapwrap" id="mapwrap"><div id="gdiv" style="position:absolute;inset:0;z-index:4;display:none"></div><div class="tmap" id="tmap"><svg class="base" id="tbase"></svg><div class="tiles" id="ttiles"></div><div class="pins" id="tpins"></div><div id="tme"></div></div>
   <div class="mtop"><span class="wxp" data-act="mode" data-k="list">${miniWx()}</span><button class="${!state.allPins?'on':''}" data-act="pins" data-v="0">${TNAME[t]}</button><button class="${state.allPins?'on':''}" data-act="pins" data-v="1">Everything</button><button data-act="fly" data-k="town">Town</button><button data-act="fly" data-k="pesc">Pescadero</button><button data-act="fly" data-k="all">Whole area</button></div>
-  <div class="mctl"><button class="g" data-act="gmap" title="Google Maps">G</button><button data-act="zin">+</button><button data-act="zout">−</button><button data-act="gps" title="Where am I">${IC.locate.replace('<svg','<svg width="22" height="22"')}</button></div>
+  <div class="mctl"><button class="g" data-act="gmap" title="${useGoogle()?'Switch to offline map':'Google Maps'}">${useGoogle()?'G':'G'}</button><button data-act="zin">+</button><button data-act="zout">−</button><button data-act="gps" title="Where am I">${IC.locate.replace('<svg','<svg width="22" height="22"')}</button></div>
   <div class="attr">© OpenStreetMap · © CARTO</div>
-  <div class="gwrap" id="gwrap"><button class="btn back" data-act="gclose" style="box-shadow:0 2px 8px rgba(0,0,0,.25);background:var(--bg)">← Offline map</button><iframe id="gframe" title="Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>`;
+  </div>`;
 }
 function miniWx(){const w=wxData(),d=dayObj();let tx='';if(w){const i=w.daily.time.indexOf(d.d);if(i>=0&&w.daily.temperature_2m_max&&w.daily.temperature_2m_max[i]!=null){const c=w.current&&isToday(d.k)?w.current:null;tx=Math.round(c&&c.temperature_2m!=null?c.temperature_2m:w.daily.temperature_2m_max[i])+'°'}}const s=sunTimes(d.d);return `${tx?tx+' · ':''}🌅 ${fmt(s.set)}`}
 function mapInit(){
   const el=$('#tmap');if(!el)return;mapState.el=el;clearTiles();mapState.pins=[];
   const top=$('#top').getBoundingClientRect().height;document.documentElement.style.setProperty('--toph',top+'px');
-  mapPins(false);mapRender();bindMapGestures(el);
+  mapPins(false);mapRender();bindMapGestures(el);gm=null;gmMarkers=[];gmMe=null;
+  if(useGoogle())loadGoogle().then(()=>{if($('#gdiv'))gmInit()}).catch(()=>toast('Google Maps didn’t load. Showing the offline map'));
   if(LS.get('gpsOk',false))startGps(false);
 }
 function worldSize(){return 256*Math.pow(2,mapState.z)}
@@ -653,8 +696,9 @@ function mapRender(){
   const me=$('#tme');if(me){const g=state.gps;if(g){me.className='me';me.style.position='absolute';me.style.transform=`translate(${(mx(g.lon)*ws-left).toFixed(1)}px,${(my(g.lat)*ws-top).toFixed(1)}px)`}else me.className=''}
   LS.set('mapc',[mapState.lat,mapState.lon]);LS.set('mapz',mapState.z);
 }
-function schedule(){if(!mapState.raf)mapState.raf=requestAnimationFrame(mapRender)}
+function schedule(){if(gm)gmMeUpdate();if(!mapState.raf)mapState.raf=requestAnimationFrame(mapRender)}
 function mapPins(keepAnim){
+  if(gm)gmPins();
   const layer=$('#tpins');if(!layer)return;layer.innerHTML='';mapState.pins=[];
   const list=PLACES.filter(p=>p.lat!=null&&(state.allPins||p.t===state.tab||p.id==='hotel'));
   list.forEach((p,i)=>{const el=document.createElement('div');el.className='pin'+(p.id===state.sel?' sel':'');el.dataset.act='open';el.dataset.id=p.id;
@@ -664,7 +708,7 @@ function mapPins(keepAnim){
   schedule();
 }
 function panBy(dx,dy){const ws=worldSize();mapState.lon=ilon(mx(mapState.lon)-dx/ws);mapState.lat=ilat(my(mapState.lat)-dy/ws);clampMap();schedule()}
-function clampMap(){mapState.lat=Math.max(23.15,Math.min(23.75,mapState.lat));mapState.lon=Math.max(-110.5,Math.min(-109.9,mapState.lon))}
+function clampMap(){mapState.lat=Math.max(23.1,Math.min(24.4,mapState.lat));mapState.lon=Math.max(-110.6,Math.min(-109.8,mapState.lon))}
 function zoomAt(dz,px,py){
   const el=mapState.el;const W=el.clientWidth,H=el.clientHeight;const ws=worldSize();
   const ux=mx(mapState.lon)+(px-W/2)/ws,uy=my(mapState.lat)+(py-H/2)/ws;
@@ -673,8 +717,8 @@ function zoomAt(dz,px,py){
 }
 let anim=0;
 function animate(fn,ms){cancelAnimationFrame(anim);const t0=performance.now();let last=0;const step=t=>{const k=Math.min(1,(t-t0)/ms);const e=1-Math.pow(1-k,3);fn(e-last,e);last=e;if(k<1)anim=requestAnimationFrame(step)};anim=requestAnimationFrame(step)}
-function zoomAnim(dz,px,py){const el=mapState.el;if(px==null){px=el.clientWidth/2;py=el.clientHeight/2}animate(d=>zoomAt(dz*d,px,py),280)}
-function flyTo(lat,lon,z){const a={lat:mapState.lat,lon:mapState.lon,z:mapState.z};animate((d,e)=>{mapState.lat=a.lat+(lat-a.lat)*e;mapState.lon=a.lon+(lon-a.lon)*e;mapState.z=a.z+(z-a.z)*e;schedule()},650)}
+function zoomAnim(dz,px,py){if(gm){gm.setZoom(gm.getZoom()+Math.sign(dz));return}const el=mapState.el;if(px==null){px=el.clientWidth/2;py=el.clientHeight/2}animate(d=>zoomAt(dz*d,px,py),280)}
+function flyTo(lat,lon,z){if(gm){gm.panTo({lat,lng:lon});gm.setZoom(Math.round(z));return}const a={lat:mapState.lat,lon:mapState.lon,z:mapState.z};animate((d,e)=>{mapState.lat=a.lat+(lat-a.lat)*e;mapState.lon=a.lon+(lon-a.lon)*e;mapState.z=a.z+(z-a.z)*e;schedule()},650)}
 function bindMapGestures(el){
   const pts=new Map();let lastD=0,lastMid=null,vel={x:0,y:0},lastMove=0,startPt=null,lastTap=0;
   el.addEventListener('pointerdown',e=>{cancelAnimationFrame(anim);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===1){mapState.moved=false;startPt={x:e.clientX,y:e.clientY};vel={x:0,y:0}}lastD=0;lastMid=null});
@@ -699,7 +743,7 @@ function startGps(center){
   else if(center)goMe();
 }
 function goMe(){const g=here();if(g)flyTo(g.lat,g.lon,Math.max(mapState.z,15));else if(state.gps)toast(`You’re ${Math.round(km(state.gps,HOTEL))} km from the hotel. Outside the map area`)}
-function googleView(lat,lon,z,label){
+function googleView_unused(lat,lon,z,label){
   if(!navigator.onLine){toast('Google Maps needs signal');return}
   const q=label?`${lat},${lon}(${label})`:`${lat},${lon}`;
   $('#gframe').src=`https://maps.google.com/maps?q=${encodeURIComponent(q)}&z=${Math.round(z)}&output=embed`;$('#gwrap').classList.add('on');
@@ -736,18 +780,20 @@ document.addEventListener('click',e=>{
   else if(a==='open')openSheet(id);
   else if(a==='fav'||a==='done'){const s=a==='fav'?favs:done;const on=!s.has(id);on?s.add(id):s.delete(id);LS.set(a==='fav'?'favs':'done',[...s]);if(on)burst(el);openSheet(id);const b=$('#sheet [data-act=fav]');if(a==='fav'&&b)b.classList.add('pop');if(state.mode==='list')render()}
   else if(a==='showmap'){const p=P[id];closeSheet();state.tab=p.t;state.mode='map';mapState.lat=p.lat;mapState.lon=p.lon;mapState.z=Math.max(15,mapState.z);render();state.sel=id;mapPins(true)}
-  else if(a==='gplace'){const p=P[id];closeSheet();if(state.mode!=='map'){state.tab=p.t;state.mode='map';mapState.lat=p.lat;mapState.lon=p.lon;mapState.z=15;render()}googleView(p.lat,p.lon,16,p.n)}
-  else if(a==='gmap')googleView(mapState.lat,mapState.lon,mapState.z);
-  else if(a==='gclose'){$('#gwrap').classList.remove('on');$('#gframe').src='about:blank'}
+    else if(a==='gmap'){
+    if(gm){LS.set('mapProv','offline');toast('Offline map');render()}
+    else if(gkey()){if(!navigator.onLine){toast('Google Maps needs signal');return}LS.set('mapProv','google');toast('Google Maps');render()}
+    else{toast('Add a Google key in Info to show Google Maps here');window.open(`https://www.google.com/maps/@${mapState.lat},${mapState.lon},${Math.round(mapState.z)}z`,'_blank')}}
   else if(a==='pins'){state.allPins=el.dataset.v==='1';document.querySelectorAll('[data-act=pins]').forEach(b=>b.classList.toggle('on',b===el));mapPins(false)}
   else if(a==='fly'){const f=FLY[k];flyTo(f[0],f[1],f[2])}
   else if(a==='zin'||a==='zout')zoomAnim(a==='zin'?1:-1);
   else if(a==='gps'){LS.set('gpsOk',true);startGps(true)}
-  else if(a==='theme'){const i=THEMES.indexOf(LS.get('theme','auto'));LS.set('theme',THEMES[(i+1)%THEMES.length]);applyTheme();toast({auto:'Theme follows your phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[LS.get('theme')]);if(state.tab==='info'&&state.mode==='list')render()}
+  else if(a==='theme'){const i=THEMES.indexOf(themeMode());LS.set('theme2',THEMES[(i+1)%THEMES.length]);applyTheme();toast({auto:'Theme follows your phone/browser',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]);if(state.tab==='info'&&state.mode==='list')render()}
   else if(a==='save'){['tides','music','resv','notes'].forEach(x=>LS.set(x,$('#e-'+x).value));toast('Saved')}
   else if(a==='reset'){if(confirm('Replace tides, music and reservations with the built-in versions?')){['tides','music','resv'].forEach(LS.del);render();toast('Reset')}}
   else if(a==='wx')refreshWx(true);
   else if(a==='savetiles')saveTiles();
+  else if(a==='savekey'){LS.set('gkey',$('#gkeyIn').value.trim());LS.set('mapProv','google');gmLoading=null;toast(gkey()?'Key saved. Map will use Google when online':'Key removed');render()}
 });
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.act==='memo'){const m=LS.get('memo',{});m[el.dataset.k]=el.value;LS.set('memo',m)}});
 document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.act==='photo')addPhotos(el.files,el.dataset.k)});
@@ -775,7 +821,8 @@ async function refreshWx(manual){
   catch(e){if(manual)toast('No connection. Showing the saved forecast')}
 }
 async function offlineStatus(){const el=$('#offl');if(!el)return;let t='';if('serviceWorker' in navigator){const r=await navigator.serviceWorker.getRegistration();t=r&&r.active?'✅ App saved for offline use':'⏳ Not saved yet. Keep it open for a few seconds on Wi-Fi'}else t='This browser can’t save the app offline';el.textContent=t}
-addEventListener('online',()=>refreshWx());
+addEventListener('online',()=>{refreshWx();if(state.mode==='map'&&!gm&&useGoogle())render()});
+addEventListener('offline',()=>{if(state.mode==='map'&&gm){gm=null;render();toast('Offline. Switched to the saved map')}});
 setInterval(()=>{applyTheme();if(state.mode==='list'&&state.tab!=='info'&&!$('#sheet').classList.contains('open')){const y=scrollY;const h=document.querySelector('.hero');if(h){const tmp=document.createElement('div');tmp.innerHTML=heroHtml();h.replaceWith(tmp.firstElementChild);const dz=document.querySelector('.days');if(dz&&tmp.children[0])dz.replaceWith(tmp.children[0]);scrollTo(0,y)}}},60000);
 
 applyTheme();render();
