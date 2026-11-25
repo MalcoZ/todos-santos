@@ -193,7 +193,12 @@ const PLACES=[
  // NIGHT
  {id:'brew',t:'night',n:'Todos Santos Brewing',lat:23.45017,lon:-110.22203,phone:'+526121452023',pid:'ChIJrW0IjacGr4YR6dvxPxThLF8',hours:H('11 am–9 pm','12–9 pm','12–9 pm','12–9 pm','12–9 pm','12–9 pm','12–11 pm'),d:'Craft beer and good burgers, with live music, trivia and karaoke on a rotating schedule. A Latin and dance night has run on Tuesdays at 6:30.'},
  {id:'rose',t:'night',n:'The Dirty Rose',lat:23.44553,lon:-110.22502,pid:'ChIJV7nalagFr4YRhTLiLMEPT-E',hours:H(null,null,null,'7 pm–12 am','7 pm–12 am','7 pm–12 am','7 pm–12 am'),quiet:true,d:'Speakeasy behind a curtain, very close to the hotel. Considered the best cocktails in town, with a local crowd. Open Wednesday to Saturday.'},
- {id:'copa',t:'night',n:'La Copa wine bar',d:'Wine and charcuterie near the plaza. A quiet nightcap. Not on the map.'},
+ {id:'copa',t:'night',n:'La Copa (Hotel Todos Santos)',d:'Wine bar near the plaza. Tequila Nation plays Friday 11/27, 7:30–10 pm. Not on the map.'},
+ {id:'aperture',t:'night',n:'Aperture Lounge',quiet:true,d:'Small lounge in town with free shows at 7 pm (doors 6): Trevor Parks on Fri 11/27, Oscar Loredo on Sat 11/28. Not on the map.'},
+ {id:'violeta',t:'night',n:'Violeta',quiet:true,d:'Wine bar in town with Sunday Night Jazz Sessions, 7:30–10:30 pm. Not on the map.'},
+ {id:'caracara',t:'night',n:'Caracara (Villa Santa Cruz)',lat:23.4913,lon:-110.2777,approx:true,dirt:true,d:'Next to The Green Room. Free Soulful Classics under the Stars on Fridays 6–9 (Fri 11/27), and Wine Down Wednesdays.'},
+ {id:'barracuda',t:'night',n:'Barracuda Cantina (Cerritos)',lat:23.336,lon:-110.1835,approx:true,d:'Beach bar with a stage facing the sunset. 9th anniversary party Sat 11/28, 11 am–11 pm, with a live band and DJs. One cover for the day.'},
+ {id:'shakas',t:'night',n:'Shaka’s Cantina (Cerritos)',d:'Garden cantina with a campfire and regular bands. YTOI plays Sat 11/28, 7–10 pm. Not on the map.'},
  {id:'remedio',t:'night',n:'Santo Remedio',d:'Bar about a 3-minute walk from the hotel. Not on the map.',quiet:true},
  {id:'sky',t:'night',n:'Sky Lounge at Guaycura',d:'Rooftop hotel bar with relaxed music. Not on the map.'},
  // INFO
@@ -257,9 +262,9 @@ const TYPES={eat:['Eat','#e0703f'],beach:['Beaches','#1f8a96'],do:['Do','#7a5cc7
 /* ================= plan ================= */
 // [time, text, placeId?]
 const PLAN={
- '11/27':{sunset:'cachora',items:[['3:00 pm','Check in, then pool time','hotel'],['4:15 pm','Wander the plaza and galleries in the golden light','plaza'],['5:00 pm','Head to La Cachora for your first sunset (about 10 min of bumpy road)','cachora'],['6:30 pm','Dinner at Mejibó, a short walk from the hotel. Reserve','mejibo'],['After','Nightcap at The Dirty Rose (open Fridays)','rose']]},
- '11/28':{sunset:'lobos',bday:true,items:[['8:00 am','Birthday breakfast at Caffe Todos Santos (cinnamon bun)','caffe'],['9:00 am','Punta Lobos: watch the pangas, then hike to the Old Port','oldport'],['12:30 pm','Carnitas Miguel’s in Pescadero','miguel'],['2:00 pm','Pool, then a massage at the hotel?','hotel'],['5:00 pm','Sunset at Punta Lobos, where fishermen sell their catch at dusk','lobos'],['6:30 pm','🎂 Jazamango','jaza'],['After','The Dirty Rose (open until midnight Saturdays) or Todos Santos Brewing (until 11)','rose']]},
- '11/29':{sunset:'pedrito',items:[['8:00 am','Baja Beans in Pescadero, with Sunday market vendors','beans'],['9:30 am','Playa Las Palmas through the palm forest (daytime only)','palmas'],['1:00 pm','Long lunch at Agricole, often with live music on weekends','agricole'],['3:30 pm','Watch surfers at Cerritos, and wade only','cerritos'],['5:00 pm','Sunset walk at San Pedrito','pedrito'],['6:30 pm','Dinner at Hierbabuena (open Sundays). Drive Hwy 19 back slowly','hierba']]},
+ '11/27':{sunset:'cachora',items:[['3:00 pm','Check in, then pool time','hotel'],['4:15 pm','Wander the plaza and galleries in the golden light','plaza'],['5:00 pm','Head to La Cachora for your first sunset (about 10 min of bumpy road)','cachora'],['6:30 pm','Dinner at Mejibó, a short walk from the hotel. Reserve','mejibo'],['After','🎵 Live music: Tequila Nation at La Copa (7:30–10) or Las Recias at the Brewing (until 9). Or a nightcap at The Dirty Rose','brew']]},
+ '11/28':{sunset:'lobos',bday:true,items:[['8:00 am','Birthday breakfast at Caffe Todos Santos (cinnamon bun)','caffe'],['9:00 am','Punta Lobos: watch the pangas, then hike to the Old Port','oldport'],['12:30 pm','Carnitas Miguel’s in Pescadero','miguel'],['2:00 pm','Pool and a massage, or 🎵 Barracuda Cantina’s 9th anniversary party in Cerritos (live band and DJs all day)','hotel'],['5:00 pm','Sunset at Punta Lobos, where fishermen sell their catch at dusk','lobos'],['6:30 pm','🎂 Jazamango','jaza'],['After','🎵 Oscar Loredo at Aperture Lounge (starts 7, free) or vinyl night at the Brewing, then The Dirty Rose (open until midnight)','rose']]},
+ '11/29':{sunset:'pedrito',items:[['8:00 am','Baja Beans in Pescadero, with Sunday market vendors','beans'],['9:30 am','Playa Las Palmas through the palm forest (daytime only)','palmas'],['1:00 pm','Long lunch at Agricole, often with live music on weekends','agricole'],['3:30 pm','Watch surfers at Cerritos, and wade only','cerritos'],['5:00 pm','Sunset walk at San Pedrito','pedrito'],['6:30 pm','Dinner at Hierbabuena (open Sundays). Drive Hwy 19 back slowly','hierba'],['8:30 pm','🎵 Sunday Night Jazz Sessions at Violeta in town (until 10:30)','violeta']]},
  '11/30':{sunset:'green',items:[['8:30 am','Eco Adventures hike or horseback ride (book ahead)','eco'],['12:30 pm','Lunch at Los Adobes in the cactus garden','adobes'],['2:00 pm','Galleries, shopping, siesta','plaza'],['4:45 pm','Drive to The Green Room (part of the road is unpaved)','green'],['5:34 pm','Sunset with your toes in the sand','green'],['6:30 pm','Dinner at The Green Room','green']]},
  '12/1':{sunset:null,items:[['8:00 am','Last breakfast at Caffe Todos Santos (Jazamango Café is closed Tuesdays)','caffe'],['11:00 am','Check out','hotel'],['Drive','Hwy 19 to the airport. Leave extra time, and fill up at Smartgas if heading north','gas2']]}
 };
@@ -284,15 +289,25 @@ const SEED={
 11/30 High 2:17 pm 3.6
 11/30 Low 10:01 pm 0.7
 # 12/1 wasn't published yet when this was built. Add it here when you have it.`,
- music:`# One per line: date, time, what & where. "?" = unconfirmed
-11/27 ~7 pm ? Pescadero62: reviews mention live music or a DJ in the evenings
-11/27 Evening ? Todos Santos Brewing: rotating live music, trivia, karaoke
-11/28 Afternoon ? Agricole: reviewers mention live music on Sat & Sun afternoons
-11/28 Late ? Todos Santos Brewing is open until 11 pm on Saturdays
-11/29 Afternoon ? Agricole: weekend afternoon live music
-12/1 6:30 pm ? Todos Santos Brewing: Latin & Dance Tuesdays (if you're still in town)
-# Film Festival: sources disagree (Nov 23–29 vs Dec 3–6). Ask around town.
-# When you have signal, check thesocialtodossantos.com and its Instagram for the week's gigs.`,
+ music:`# Listings from livetodossantos.com and whattodobaja.com (checked Nov 24). "?" = sources disagree or unconfirmed. Schedules change.
+11/27 5:00 pm The Tree Huggers · Cerritos Beach Inn
+11/27 6–9 pm Soulful Classics under the Stars: Colleen Rennison & Nacho Chávez · Caracara, Villa Santa Cruz (next to The Green Room) · free
+11/27 6–9 pm Las Recias, Friday Night Live · Todos Santos Brewing (5 min walk)
+11/27 6:30 pm ? Pink Lady Limonata · Todos Santos Brewing (one listing, may be the same night)
+11/27 7:00 pm Trevor Parks, live guitar · Aperture Lounge, Todos Santos · free (doors 6)
+11/27 7:30–10 pm Tequila Nation · La Copa, Hotel Todos Santos
+11/28 11 am–11 pm Barracuda Cantina 9th anniversary: Ceviche Sound live + DJs · Cerritos · one cover for the day
+11/28 7:00 pm Oscar Loredo · Aperture Lounge, Todos Santos · free (doors 6)
+11/28 7–10 pm YTOI · Shaka's Cantina, Cerritos
+11/28 7:00 pm Saturday Vinyl Night, DJ Danny Desierto · Todos Santos Brewing · free
+11/29 5:00 pm Open mic & karaoke · Viñedo Las Tinajas winery · free
+11/29 5–8 pm ? Lori Dagenais (or The Tree Huggers, 5:30, per another listing) · La Tuna, Cerritos
+11/29 5:30 pm Open mic, hosted by El Groove · Todos Santos Brewing · free
+11/29 7:30–10:30 pm Sunday Night Jazz Sessions · Violeta, Todos Santos
+11/30 5–8 pm ? BALAM, local jazz/blues/rock duo (weekly Mondays) · Cleos, Las Tunas
+12/1 6–9 pm ? Taco Tuesday with live music (weekly) · 5 Tacos and a Beer, Las Tunas
+# More weekly regulars: Wine Down Wednesday at Caracara (6–9), Friday Soulful Classics at Caracara (free).
+# Check whattodobaja.com/today when you have signal for anything new.`,
  resv:`11/28 6:30 pm Jazamango (Los Naranjos, La Huerta; not Jazamango Café)`,
  notes:''
 };
@@ -400,7 +415,7 @@ function viewToday(){
   if(plan&&plan.bday)html+=`<div class="card bday"><div class="row"><div class="grow"><h3 style="font-size:22px">Happy birthday 🎂</h3><p class="mut">Punta Lobos sunset at ${fmt(s.set)}, then Jazamango at 6:30.</p></div><div style="font-size:40px">🎉</div></div>${isToday(day.k)&&tsMinutes()<18*60+30?`<p class="cd"><b>Dinner in ${dur(18*60+30-tsMinutes())}</b></p>`:''}</div>`;
   html+=`<div class="grid2"><div class="card"><div class="mut small">🌅 Sunset</div><div class="big">${fmt(s.set).replace(' pm','')}<span class="mut" style="font-size:16px"> pm</span></div><p class="mut small">Sunrise ${fmt(s.rise)}${spot?`<br>Spot: <a class="link" data-act="open" data-id="${spot.id}">${esc(spot.n)}</a>`:''}</p><div id="cd">${countdownHtml(day,plan)}</div></div><div class="card"><div class="mut small">🌤 Weather</div>${wxH}</div></div>`;
   html+=`<div class="card"><div class="row"><h3 class="grow">🌊 Tides</h3>${nextTide?`<span class="tag res">Next: ${nextTide.type.toLowerCase()} ${fmt(nextTide.min)}</span>`:''}</div>${td.length?tideChart(td)+td.map(t=>t.min!=null?`<div class="row small"><span style="width:44px;font-weight:600">${t.type}</span><span class="grow">${fmt(t.min)}</span><span class="mut">${t.ft} ft</span></div>`:`<p class="small">${esc(t.raw)}</p>`).join(''):'<p class="mut small">No tides for this day yet. Add them in Info → Edit.</p>'}<p class="mut small">The lowest tides of the day are best for walking the beach and seeing tide pools.</p></div>`;
-  html+=`<div class="card"><h3>🎵 Live music</h3>${music.length?music.map(m=>`<p class="small">${m.includes('?')?'<span class="tag">unconfirmed</span>':'<span class="tag open">confirmed</span>'}${esc(m.replace(/\s\?\s/,' '))}</p>`).join(''):'<p class="mut small">Nothing listed for this day.</p>'}<p class="mut small"><a class="link" href="https://www.thesocialtodossantos.com/" target="_blank" rel="noopener">Check this week’s gigs</a> (needs signal)</p></div>`;
+  html+=`<div class="card"><h3>🎵 Live music</h3>${music.length?music.map(m=>`<p class="small">${m.includes('?')?'<span class="tag">unconfirmed</span>':'<span class="tag open">confirmed</span>'}${esc(m.replace(/\s\?\s/,' '))}</p>`).join(''):'<p class="mut small">Nothing listed for this day.</p>'}<p class="mut small"><a class="link" href="https://whattodobaja.com/today" target="_blank" rel="noopener">Check today’s gigs</a> (needs signal)</p></div>`;
   if(resv.length)html+=`<div class="card"><h3>📌 Reservations</h3>${resv.map(r=>`<p>${esc(r)}</p>`).join('')}</div>`;
   html+=`<h2>The plan</h2><div class="card">${planList(plan)}</div>`;
   html+=memoriesCard(day);
@@ -440,7 +455,7 @@ function viewInfo(){
   <label>Trip notes</label><textarea id="e-notes" style="min-height:70px;font-family:inherit">${esc(data('notes'))}</textarea>
   <div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>
   <h2>Saved places</h2><div class="card">${[...favs].map(id=>P[id]?`<p><a class="link" data-act="open" data-id="${id}">★ ${esc(P[id].n)}</a></p>`:'').join('')||'<p class="mut small">Tap ☆ Save on any place.</p>'}</div>
-  <h2>App</h2><div class="card"><p class="small" id="offl">Checking offline status…</p><div class="actions"><button class="btn" data-act="wx">Refresh forecast</button><button class="btn" onclick="resetApp()">Reset app</button><button class="btn" data-act="theme">Theme: ${LS.get('theme','auto')}</button></div><p class="mut small">To install: open in Safari → Share → Add to Home Screen. Then test it in airplane mode.</p><p class="mut small">Version 3.1</p></div>`;
+  <h2>App</h2><div class="card"><p class="small" id="offl">Checking offline status…</p><div class="actions"><button class="btn" data-act="wx">Refresh forecast</button><button class="btn" onclick="resetApp()">Reset app</button><button class="btn" data-act="theme">Theme: ${LS.get('theme','auto')}</button></div><p class="mut small">To install: open in Safari → Share → Add to Home Screen. Then test it in airplane mode.</p><p class="mut small">Version 3.2</p></div>`;
 }
 
 /* ================= map ================= */
