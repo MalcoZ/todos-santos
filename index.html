@@ -101,6 +101,7 @@ ul.clean{margin:4px 0;padding-left:18px}ul.clean li{margin:3px 0}
 <nav id="nav"></nav>
 
 <script>
+try{localStorage.removeItem('wx')}catch(e){}
 // Safety net: if anything breaks, show the error and a reset button instead of a blank screen.
 function resetApp(){
   try{localStorage.removeItem('tab')}catch(e){}
@@ -389,8 +390,11 @@ function countdownHtml(day,plan){
 function viewToday(){
   const day=DAYS.find(x=>x.k===state.day),s=sunTimes(day.d),plan=PLAN[day.k],spot=plan&&plan.sunset?P[plan.sunset]:null;
   const td=tidesFor(day.k),music=linesFor('music',day.k),resv=linesFor('resv',day.k);
-  const wx=LS.get('wx',null);let wxH='<p class="mut small">No forecast saved yet. Open the app once with signal.</p>';
-  if(wx&&wx.daily){const i=wx.daily.time.indexOf(day.d);if(i>=0)wxH=`<div class="big">${Math.round(wx.daily.temperature_2m_max[i])}°<span class="mut" style="font-size:20px"> / ${Math.round(wx.daily.temperature_2m_min[i])}°</span></div><p class="small">${wxDesc(wx.daily.weather_code[i])} · rain ${wx.daily.precipitation_probability_max[i]??'–'}%<br>wind ${Math.round(wx.daily.wind_speed_10m_max[i])} mph · UV ${Math.round(wx.daily.uv_index_max[i])}</p><p class="mut small">Saved ${ago(wx.saved)}</p>`;else wxH='<p class="mut small">This day is outside the saved forecast. It will fill in closer to the date.</p>'}
+  const wx=LS.get('wx3',null);let wxH='<p class="mut small">No forecast saved yet. Open the app once with signal.</p>';
+  if(wx&&wx.daily&&Array.isArray(wx.daily.time)){const W=wx.daily,i=W.time.indexOf(day.d);const g=(k)=>(Array.isArray(W[k])&&W[k][i]!=null)?W[k][i]:null;
+    if(i>=0&&g('temperature_2m_max')!=null){const code=g('weather_code')!=null?g('weather_code'):g('weathercode');const rain=g('precipitation_probability_max'),wind=g('wind_speed_10m_max'),uv=g('uv_index_max');
+      wxH=`<div class="big">${Math.round(g('temperature_2m_max'))}°<span class="mut" style="font-size:20px"> / ${Math.round(g('temperature_2m_min'))}°</span></div><p class="small">${code!=null?wxDesc(code):''}${rain!=null?' · rain '+rain+'%':''}${wind!=null?'<br>wind '+Math.round(wind)+' mph':''}${uv!=null?' · UV '+Math.round(uv):''}</p><p class="mut small">Saved ${ago(wx.saved)}</p>`}
+    else wxH='<p class="mut small">This day is outside the saved forecast. It will fill in closer to the date.</p>'}
   const nextTide=isToday(day.k)?td.find(x=>x.min!=null&&x.min>tsMinutes()):null;
   let html=dayBar()+`<h2 style="margin-top:14px">${day.label}</h2>`;
   if(plan&&plan.bday)html+=`<div class="card bday"><div class="row"><div class="grow"><h3 style="font-size:22px">Happy birthday 🎂</h3><p class="mut">Punta Lobos sunset at ${fmt(s.set)}, then Jazamango at 6:30.</p></div><div style="font-size:40px">🎉</div></div>${isToday(day.k)&&tsMinutes()<18*60+30?`<p class="cd"><b>Dinner in ${dur(18*60+30-tsMinutes())}</b></p>`:''}</div>`;
@@ -436,7 +440,7 @@ function viewInfo(){
   <label>Trip notes</label><textarea id="e-notes" style="min-height:70px;font-family:inherit">${esc(data('notes'))}</textarea>
   <div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>
   <h2>Saved places</h2><div class="card">${[...favs].map(id=>P[id]?`<p><a class="link" data-act="open" data-id="${id}">★ ${esc(P[id].n)}</a></p>`:'').join('')||'<p class="mut small">Tap ☆ Save on any place.</p>'}</div>
-  <h2>App</h2><div class="card"><p class="small" id="offl">Checking offline status…</p><div class="actions"><button class="btn" data-act="wx">Refresh forecast</button><button class="btn" onclick="resetApp()">Reset app</button><button class="btn" data-act="theme">Theme: ${LS.get('theme','auto')}</button></div><p class="mut small">To install: open in Safari → Share → Add to Home Screen. Then test it in airplane mode.</p><p class="mut small">Version 3</p></div>`;
+  <h2>App</h2><div class="card"><p class="small" id="offl">Checking offline status…</p><div class="actions"><button class="btn" data-act="wx">Refresh forecast</button><button class="btn" onclick="resetApp()">Reset app</button><button class="btn" data-act="theme">Theme: ${LS.get('theme','auto')}</button></div><p class="mut small">To install: open in Safari → Share → Add to Home Screen. Then test it in airplane mode.</p><p class="mut small">Version 3.1</p></div>`;
 }
 
 /* ================= map ================= */
@@ -550,7 +554,7 @@ async function delPhoto(id,day){const d=await db();d.transaction('photos','readw
 /* ================= weather & offline ================= */
 async function refreshWx(manual){
   try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FMazatlan&forecast_days=16`);
-    if(!r.ok)throw 0;const j=await r.json();LS.set('wx',{daily:j.daily,saved:Date.now()});if(manual)toast('Forecast updated');if(state.tab==='today')render()}
+    if(!r.ok)throw 0;const j=await r.json();LS.set('wx3',{daily:j.daily,saved:Date.now()});if(manual)toast('Forecast updated');if(state.tab==='today')render()}
   catch(e){if(manual)toast('No connection. Showing the saved forecast')}
 }
 async function offlineStatus(){const el=$('#offl');if(!el)return;let t='';
@@ -562,7 +566,7 @@ addEventListener('online',()=>{netBadge();refreshWx()});addEventListener('offlin
 setInterval(()=>{applyTheme();if(state.tab==='today'){const d=DAYS.find(x=>x.k===state.day);const el=$('#cd');if(el)el.innerHTML=countdownHtml(d,PLAN[d.k])}},30000);
 
 applyTheme();netBadge();render();
-if(navigator.onLine){const wx=LS.get('wx',null);if(!wx||Date.now()-wx.saved>3*3600e3)refreshWx()}
+if(navigator.onLine){const wx=LS.get('wx3',null);if(!wx||Date.now()-wx.saved>3*3600e3)refreshWx()}
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
