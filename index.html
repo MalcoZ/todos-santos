@@ -75,6 +75,9 @@ main{max-width:720px;margin:0 auto}
 .r .nm{font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .r .ln{font-size:13.5px;color:var(--mut);margin-top:1px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .r .rt{text-align:right;font-size:13px;color:var(--mut);flex:none}
+.qs{border:0;background:none;font-size:20px;color:var(--mut);padding:6px;cursor:pointer;flex:none;line-height:1}
+.qs.on{color:#f5b400}
+.qs.pop{animation:pop .45s cubic-bezier(.3,1.8,.5,1)}
 .r .why{font-size:13.5px;color:var(--ink);opacity:.85;margin-top:2px}
 .st{font-weight:600}
 .st.open{color:var(--good)}.st.soon{color:var(--warn)}.st.closed{color:var(--bad)}
@@ -165,6 +168,19 @@ html[data-theme=dark] .tile.fb{filter:invert(.92) hue-rotate(180deg) brightness(
 .sdays{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .dayhead{display:flex;align-items:baseline;gap:8px;padding:14px 16px 6px}
 .dayhead b{font-size:16px}.dayhead span{color:var(--mut);font-size:13px}
+.it{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line);animation:fadeUp .3s ease both;background:var(--bg)}
+.it .tm{width:74px;flex:none;border:1px solid var(--line);background:var(--bg2);border-radius:8px;padding:6px 7px;font-size:13px;font-weight:700;color:var(--ink)}
+.it .tm::placeholder{color:var(--mut);font-weight:500}
+.it .nm{font-weight:700;font-size:15.5px}
+.it .ln{font-size:12.5px;color:var(--mut)}
+.it .ib2{border:0;background:none;color:var(--mut);font-size:17px;padding:5px 6px;cursor:pointer;flex:none}
+.it.note .nm{font-weight:600}
+.it.flash{animation:flash .9s ease}
+@keyframes flash{0%{background:rgba(239,90,60,.18)}100%{background:var(--bg)}}
+.add{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.add select{width:100%;font:inherit;font-size:15px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--ink)}
+.empty{padding:22px 16px;text-align:center;color:var(--mut);border-bottom:1px solid var(--line)}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:2px}
 /* sheet */
 #scrim{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .25s}
 #scrim.open{opacity:1;pointer-events:auto}
@@ -276,7 +292,7 @@ const PLACES=[
  {id:'cachora',t:'beach',n:'Playa La Cachora',lat:23.44304,lon:-110.24128,pid:'ChIJtzntnv4Dr4YRYBXTwuv0-cM',dirt:true,quiet:true,sunset:true,d:'Close to town and nearly empty. Reviewers report seeing whales from the sand. The road in is narrow, bumpy and sandy. Big waves, so it isn’t for swimming.'},
  {id:'lobos',t:'beach',n:'Punta Lobos',lat:23.41427,lon:-110.23133,pid:'ChIJJyqVTsGpr4YR0GT0MN1TlMo',quiet:true,sunset:true,d:'Fishermen launch pangas here, and around dusk you can buy fish right off the boats. Yellow chapel, and the trailhead for the Old Port hike. Steep beach with strong rips, so don’t swim.'},
  {id:'palmas',t:'beach',n:'Playa Las Palmas',lat:23.38978,lon:-110.21191,pid:'ChIJ-fmISpMEr4YR87HAaKB_Qls',dirt:true,quiet:true,d:'A 5-minute walk through a palm forest to a quiet cove. The landowner maintains the lot and closes the road before sunset, so go in the daytime. No amenities. Watch for biting bugs and loose horses.'},
- {id:'pedrito',t:'beach',n:'Playa San Pedrito',lat:23.376,lon:-110.201,approx:true,dirt:true,quiet:true,sunset:true,d:'Long, mostly empty beach just north of Rancho Pescadero. Good for walks and sunset. Map pin is approximate. Pacific currents, so wade only.'},
+ {id:'pedrito',t:'beach',n:'Playa San Pedrito',lat:23.36878,lon:-110.20302,pid:'ChIJv0Qm7NIEr4YRsvVh2XN9uvk',dirt:true,quiet:true,sunset:true,d:'Long, mostly empty beach just north of Rancho Pescadero. Good for walks and sunset. Map pin is approximate. Pacific currents, so wade only.'},
  {id:'cerritos',t:'beach',n:'Playa Los Cerritos',lat:23.336,lon:-110.183,approx:true,warn:true,sunset:true,d:'The social beach, with surf schools and palapa bars. Sources disagree on how safe it is to swim and it gets crowded. Swim only with lifeguards and green flags. Map pin is approximate.'},
  // DO
  {id:'oldport',t:'do',n:'Old Port hike (from Punta Lobos)',lat:23.4135,lon:-110.2300,approx:true,quiet:true,d:'About 4 miles, starting behind the yellow chapel on Punta Lobos beach. Go in the morning or well before dark. Bring water. The app’s map works offline, but download a Google Maps offline area too.'},
@@ -295,6 +311,34 @@ const PLACES=[
  {id:'triunfo',drive:'About 1 h drive',t:'do',n:'El Triunfo mining town',lat:23.80213,lon:-110.10850,pid:'ChIJBdi3WxG7r4YR9Lx48YY5IdU',hours:H('10 am–5 pm','10 am–5 pm',null,'10 am–5 pm','10 am–5 pm','10 am–5 pm','10 am–5 pm'),quiet:true,d:'19th-century silver town about an hour inland. La Ramona smokestack, the Ruta de Plata mining museum (closed Tuesdays), a quirky music museum and a newer cowboy museum. Lunch at El Minero.'},
  {id:'tecolote',t:'do',n:'Tecolote Bookstore',lat:23.44895,lon:-110.22447,phone:'+526121450295',pid:'ChIJ2SjeDagGr4YRHgm8RUJsJLw',hours:D('11 am–4 pm'),quiet:true,d:'Beloved bilingual bookstore with local authors, cards and crafts. The owner is a great source of local tips.'},
  {id:'pastora',t:'beach',n:'Playa La Pastora',lat:23.48839,lon:-110.27609,pid:'ChIJI1APXvoFr4YRmdnSGIogu7g',quiet:true,sunset:true,dirt:true,d:'Big, nearly empty surf beach north of town near The Green Room. Locals call it one of the best sunsets around, and you might spot whales. Not for swimming.'},
+ // ---- added: wider 40-mile range ----
+ {"id": "mirador", "t": "eat", "n": "El Mirador", "lat": 23.43555, "lon": -110.23305, "pid": "ChIJP70hZwgEr4YROwiw2p0rXMc", "phone": "+526121750800", "hours": ["1–9 pm", "1–9 pm", "1–9 pm", "1–9 pm", "1–9 pm", "1–9 pm", "1–9 pm"], "sunset": 1, "d": "Hilltop restaurant above the beach south of town with big ocean views. Reviewers come for the atmosphere and stay for the food and drinks. A strong sunset-dinner alternative to The Green Room.", "meal": "ld"},
+ {"id": "oystera", "t": "eat", "n": "Oystera", "lat": 23.44731, "lon": -110.22704, "pid": "ChIJ5UNmDmAFr4YRavAIy_ziWCA", "phone": "+526122280621", "hours": ["10 am–9 pm", "12–8 pm", "10 am–9 pm", "10 am–9 pm", "10 am–9 pm", "10 am–9 pm", "10 am–9 pm"], "d": "Oyster and seafood bar in a pretty garden right by the hotel. Very popular, so expect a wait at peak times.", "meal": "ld"},
+ {"id": "generala", "t": "eat", "n": "La Generala", "lat": 23.44533, "lon": -110.22436, "pid": "ChIJy0PyNwMEr4YRS93yCApPgdE", "phone": "+526241344918", "hours": ["8:30 am–4 pm", "8:30 am–4 pm", "8:30 am–4 pm", "8:30 am–4 pm", null, "8:30 am–4 pm", "8:30 am–4 pm"], "quiet": 1, "d": "Home-style Mexican cooking served buffet style, so you can try a bit of everything. Reviewers call it some of the best food of their trip. Closed Thursdays.", "meal": "bl"},
+ {"id": "dum", "t": "eat", "n": "DŪM", "lat": 23.45446, "lon": -110.22954, "pid": "ChIJk9M7FgAHr4YRHAlqhzfpJHg", "phone": "+526242420355", "hours": ["1–7 pm", "4–9 pm", null, null, "4–9 pm", "4–9 pm", "4–9 pm"], "quiet": 1, "d": "Intimate tasting-menu restaurant (7 courses) in a garden setting just north of the center. A splurge worth considering for the birthday weekend. Reserve ahead.", "meal": "d"},
+ {"id": "garita", "t": "eat", "n": "La Garita", "lat": 23.62759, "lon": -110.22929, "pid": "ChIJO3Y7h1Opr4YR998EaRdKG_k", "phone": "+526121765292", "hours": ["7 am–4:20 pm", "7 am–4:20 pm", "7 am–4:20 pm", "7 am–4:20 pm", "7 am–4:20 pm", "7 am–4:20 pm", "7 am–4:20 pm"], "quiet": 1, "d": "Roadside breakfast-and-lunch institution about 20 minutes north on the way to La Paz. Burritos, empanadas, chips and salsa. Good stop on a La Paz or El Triunfo day.", "meal": "bl"},
+ {"id": "cienpalmas", "t": "eat", "n": "Cien Palmas", "lat": 23.44754, "lon": -110.22213, "pid": "ChIJNXN2SIwFr4YRIzYWgsjoX0o", "hours": ["9 am–3 pm", null, "9 am–3 pm", "9 am–3 pm", "9 am–3 pm", "9 am–3 pm", "9 am–3 pm"], "quiet": 1, "d": "Family-run brunch spot in a beautiful garden near the center. Closed Mondays.", "meal": "bl"},
+ {"id": "santoro", "t": "eat", "n": "Santoro Cantina", "lat": 23.44951, "lon": -110.22478, "pid": "ChIJYXPkBLEHr4YRtLL0gZZglXc", "phone": "+526121071570", "hours": ["11 am–9 pm", "11 am–9 pm", null, "11 am–9 pm", "11 am–9 pm", "11 am–9 pm", "11 am–9 pm"], "d": "Lively cantina in town with fish tacos and house cocktails. Closed Tuesdays.", "meal": "ld"},
+ {"id": "barracuda", "t": "eat", "n": "Barracuda Cantina", "lat": 23.33028, "lon": -110.17612, "pid": "ChIJx6D1wO8ar4YRNg7TVi9H8gI", "phone": "+526121042940", "hours": ["12:30–8 pm", "12:30–8 pm", "12:30–8 pm", null, "12:30–8 pm", "12:30–8 pm", "12:30–8 pm"], "sunset": 1, "d": "Beach bar at Cerritos with a sunset stage and excellent tacos. Try the passion-fruit habanero salsa. Closed Wednesdays.", "meal": "ld"},
+ {"id": "azur", "t": "eat", "n": "Azur Cerritos", "lat": 23.32898, "lon": -110.1745, "pid": "ChIJ87n_mCsbr4YRrGRiuroV2fo", "phone": "+526123920024", "hours": ["8 am–8:30 pm", "8 am–8:30 pm", "8 am–8:30 pm", "8 am–8:30 pm", "8 am–8:30 pm", "8 am–8:30 pm", "8 am–8:30 pm"], "d": "Fusion restaurant at Cerritos beach, open from breakfast through dinner, with standout service.", "meal": "bld"},
+ {"id": "latuna", "t": "eat", "n": "La Tuna (Cerritos)", "lat": 23.33032, "lon": -110.17643, "pid": "ChIJISUhfAAbr4YR-I1xNwuoSrk", "phone": "+526644995633", "hours": ["1–9 pm", "12–8 pm", "12–8 pm", "12–8 pm", "12–8 pm", "12–8 pm", "1–9 pm"], "quiet": 1, "d": "Seafood bar at Cerritos with marlin sopes and fish tacos. Live music on Sunday afternoons.", "meal": "ld"},
+ {"id": "garropa", "t": "eat", "n": "Garropa", "lat": 23.33035, "lon": -110.17822, "pid": "ChIJ-V27-7wbr4YRlqY6FOdR6gE", "hours": ["9:30 am–5:30 pm", null, null, "9:30 am–5 pm", "9:30 am–5 pm", "9:30 am–5 pm", "9:30 am–5 pm"], "quiet": 1, "d": "Unassuming beach shack at Cerritos with chef-driven seafood; the chef shows you the catch of the day. Wednesday to Sunday daytime only.", "meal": "bl"},
+ {"id": "bigfun", "t": "eat", "n": "Big Fun Beach Club", "lat": 23.33045, "lon": -110.17697, "pid": "ChIJg8BhaH4br4YREVSYcMLWR0Y", "phone": "+525524469745", "hours": ["12–9 pm", "11 am–7 pm", "11 am–7 pm", "11 am–7 pm", "11 am–7 pm", "12–9 pm", "12–9 pm"], "d": "Cerritos beach club with lounge areas steps from the water. Good for a long lazy afternoon. DJ sets some evenings.", "meal": "ld"},
+ {"id": "shakas", "t": "eat", "n": "Shaka’s Cantina", "lat": 23.34011, "lon": -110.17385, "pid": "ChIJva5cYBcbr4YRWvfQxJGz04M", "phone": "+526241373746", "hours": ["11 am–9 pm", "12–9 pm", "12–9 pm", "12–9 pm", "12–9 pm", "12–9 pm", "12–9 pm"], "d": "Eclectic cantina and gallery near Cerritos with gardens and a campfire. Regular live bands.", "meal": "ld"},
+ {"id": "poblano", "t": "eat", "n": "Tacos El Poblano", "lat": 23.44909, "lon": -110.22353, "pid": "ChIJ-8ZTqwIEr4YRxfQuu-yb6oA", "phone": "+526122028617", "hours": ["8–1 am", "8–1 am", "8–1 am", "8–1 am", "8–1 am", "8–1 am", "8–1 am"], "quiet": 1, "d": "Casual open-air taquería in town, made to order and open late (until 1 am). Good for an after-music snack.", "meal": "ld"},
+ {"id": "mipueblo", "t": "eat", "n": "Taquería Mi Pueblo", "lat": 23.44056, "lon": -110.22337, "pid": "ChIJ7YX3La1Lr4YRPdJbM86n2mc", "phone": "+526241341911", "hours": ["1 pm–12 am", "1 pm–12 am", "1 pm–12 am", "1 pm–12 am", "1 pm–12 am", "1 pm–12 am", "1 pm–12 am"], "quiet": 1, "d": "Small taquería south of the center with a rotating menu. Reviewers rave about the suadero. Open afternoon until midnight.", "meal": "ld"},
+ {"id": "5tacos", "t": "eat", "n": "5 Tacos and a Beer", "lat": 23.46268, "lon": -110.24498, "pid": "ChIJRWFMm-YBr4YRr9sR-eRJexo", "phone": "+526123483733", "hours": ["5–10:30 pm", "5–10:30 pm", "5–10:30 pm", null, "5–10:30 pm", "5–11:30 pm", "5–10:30 pm"], "quiet": 1, "d": "Casual evening taco spot in Las Tunas: five tacos and a beer at a set price, plus live music on Tuesdays. Closed Wednesdays.", "meal": "d"},
+ {"id": "george", "t": "eat", "n": "Tacos George's", "lat": 23.44926, "lon": -110.22343, "pid": "ChIJKSgnVR0Er4YRfmyuF2g2M9E", "phone": "+526121028768", "hours": ["9 am–3 pm", "9 am–3 pm", "9 am–3 pm", "9 am–3 pm", "9 am–3 pm", "9 am–3 pm", "9 am–3 pm"], "quiet": 1, "d": "Fish and shrimp tacos, flash-fried to order, in the center of town. Daytime only.", "meal": "bl"},
+ {"id": "marazul", "t": "eat", "n": "El Mar Azul", "lat": 23.44876, "lon": -110.22405, "pid": "ChIJVVEHXuYFr4YR06cjUElaAL8", "phone": "+526122145707", "hours": [null, "9 am–4 pm", "9 am–4 pm", "9 am–4 pm", "9 am–4 pm", "9 am–4 pm", "9 am–4 pm"], "quiet": 1, "d": "Couple-run stand in the center making fried fish and shrimp tacos fresh in moments. Closed Sundays.", "meal": "l"},
+ {"id": "todostacos", "t": "eat", "n": "Todos Tacos", "lat": 23.46479, "lon": -110.24622, "pid": "ChIJ3f5Pd-YBr4YRYk5kgB14BV8", "phone": "+526121423598", "hours": ["9 am–3 pm", "9 am–3 pm", null, null, null, "9 am–3 pm", "9 am–3 pm"], "quiet": 1, "d": "Tiny spot in Las Tunas with some of the best fish, shrimp and octopus tacos in the area. Friday to Monday mornings only.", "meal": "bl"},
+ {"id": "migrino", "t": "beach", "n": "Playa Migriño", "lat": 23.04003, "lon": -110.10258, "pid": "ChIJwaZZhso7r4YR1d9QTYkqa_Y", "quiet": 1, "dirt": 1, "sunset": 1, "d": "Wild, nearly empty beach about 45 minutes south, at a river mouth with dunes. Mostly fishermen, ATVs and whale spouts. No services. Strong surf, so don’t swim."},
+ {"id": "playasantos", "t": "beach", "n": "Playa Santos", "lat": 23.11276, "lon": -110.11907, "pid": "ChIJSXbngCM9r4YRy46NTz0fNeI", "quiet": 1, "dirt": 1, "d": "Remote beach around 40 minutes south where locals fish from the rocks. Bring everything you need."},
+ {"id": "zorra", "t": "do", "n": "Cañón de la Zorra", "lat": 23.49861, "lon": -109.79408, "pid": "ChIJWYV8Ac9wr4YRbMzEvxm2j2Y", "hours": ["9 am–6 pm", "9 am–6 pm", "9 am–6 pm", "9 am–6 pm", "9 am–6 pm", "9 am–6 pm", "9 am–6 pm"], "quiet": 1, "d": "Canyon with a waterfall and swimming hole in the Sierra on the east side, near Santiago. Allow about 1 h 30 min each way. The falls can be weak in dry season, so treat it as a scenic drive and hike."},
+ {"id": "sierra", "t": "do", "n": "Sierra de la Laguna", "lat": 23.56667, "lon": -110.0, "pid": "ChIJ8w3FOxSgr4YRpi3iEEFBG3U", "quiet": 1, "d": "Mountain biosphere reserve right behind Todos Santos. Reviewers paid about 250 pesos per person to enter. Best done with a guide (see Eco Adventures)."},
+ {"id": "cowboy", "t": "do", "n": "Cerritos Cowboy", "lat": 23.32189, "lon": -110.16654, "pid": "ChIJzQwiHJYbr4YRZQJEZEjLAww", "phone": "+526121670407", "hours": ["8 am–8 pm", "8 am–8 pm", "8 am–8 pm", "8 am–8 pm", "8 am–8 pm", "8 am–8 pm", "8 am–8 pm"], "d": "Horseback rides at Cerritos through the desert and onto the beach. Reviewers love the sunset rides, with the ranch dogs tagging along."},
+ {"id": "equus", "t": "do", "n": "Equus Sur", "lat": 23.44695, "lon": -110.24007, "pid": "ChIJL5irm_sFr4YRjfmvGYlLuGk", "phone": "+526242300288", "hours": [null, "8:30 am–6 pm", "8:30 am–6 pm", "8:30 am–6 pm", "8:30 am–6 pm", "8:30 am–6 pm", null], "quiet": 1, "d": "Small horse farm just west of town offering rides. Weekdays only."},
+ {"id": "pegaso", "t": "do", "n": "Pegaso Expediciones", "lat": 23.44737, "lon": -110.22508, "pid": "ChIJ6_huKTcFr4YReQPcA_NIGFs", "phone": "+526121480200", "quiet": 1, "d": "Local horseback outfitter in town. Reviewers love the rides, and the photos and videos the guides take for you."},
+ {"id": "vientos", "t": "do", "n": "Cuatro Vientos", "lat": 23.45292, "lon": -110.23174, "pid": "ChIJQ4RJlKsGr4YRccd5etArdYU", "hours": ["7 am–9:30 pm", "7 am–9:30 pm", "7 am–9:30 pm", "7 am–9:30 pm", "7 am–9:30 pm", "7 am–9:30 pm", "7 am–9:30 pm"], "quiet": 1, "d": "Beautiful yoga studio on the hill above town. Drop-in classes from morning to evening."},
  // NIGHT
  {id:'brew',t:'night',n:'Todos Santos Brewing',lat:23.45017,lon:-110.22203,phone:'+526121452023',pid:'ChIJrW0IjacGr4YR6dvxPxThLF8',hours:H('11 am–9 pm','12–9 pm','12–9 pm','12–9 pm','12–9 pm','12–9 pm','12–11 pm'),d:'Craft beer and good burgers, with live music, trivia and karaoke on a rotating schedule. A Latin and dance night has run on Tuesdays at 6:30.'},
  {id:'rose',t:'night',n:'The Dirty Rose',lat:23.44553,lon:-110.22502,pid:'ChIJV7nalagFr4YRhTLiLMEPT-E',hours:H(null,null,null,'7 pm–12 am','7 pm–12 am','7 pm–12 am','7 pm–12 am'),quiet:true,d:'Speakeasy behind a curtain, very close to the hotel. Considered the best cocktails in town, with a local crowd. Open Wednesday to Saturday.'},
@@ -302,8 +346,6 @@ const PLACES=[
  {id:'aperture',t:'night',n:'Aperture Lounge',quiet:true,d:'Small lounge in town with free shows at 7 pm (doors 6): Trevor Parks on Fri 11/27, Oscar Loredo on Sat 11/28. Not on the map.'},
  {id:'violeta',t:'night',n:'Violeta',quiet:true,d:'Wine bar in town with Sunday Night Jazz Sessions, 7:30–10:30 pm. Not on the map.'},
  {id:'caracara',t:'night',n:'Caracara (Villa Santa Cruz)',lat:23.4913,lon:-110.2777,approx:true,dirt:true,d:'Next to The Green Room. Free Soulful Classics under the Stars on Fridays 6–9 (Fri 11/27), and Wine Down Wednesdays.'},
- {id:'barracuda',t:'night',n:'Barracuda Cantina (Cerritos)',lat:23.336,lon:-110.1835,approx:true,d:'Beach bar with a stage facing the sunset. 9th anniversary party Sat 11/28, 11 am–11 pm, with a live band and DJs. One cover for the day.'},
- {id:'shakas',t:'night',n:'Shaka’s Cantina (Cerritos)',d:'Garden cantina with a campfire and regular bands. YTOI plays Sat 11/28, 7–10 pm. Not on the map.'},
  {id:'remedio',t:'night',n:'Santo Remedio',d:'Bar about a 3-minute walk from the hotel. Not on the map.',quiet:true},
  {id:'sky',t:'night',n:'Sky Lounge at Guaycura',d:'Rooftop hotel bar with relaxed music. Not on the map.'},
  // INFO
@@ -427,13 +469,13 @@ const MEAL={caffe:'b',jazacafe:'b',beans:'b',mejibo:'bld',agricole:'bld',miguel:
 const COAST=[[23.53,-110.305],[23.505,-110.288],[23.491,-110.2795],[23.475,-110.268],[23.46,-110.256],[23.443,-110.2425],[23.43,-110.238],[23.4135,-110.2335],[23.402,-110.2245],[23.3895,-110.2135],[23.376,-110.2025],[23.362,-110.195],[23.348,-110.189],[23.336,-110.1855],[23.32,-110.179],[23.29,-110.168]];
 const ROAD=[[23.53,-110.19],[23.505,-110.200],[23.494,-110.2065],[23.47,-110.215],[23.452,-110.2215],[23.4455,-110.2225],[23.43,-110.2155],[23.41,-110.204],[23.392,-110.19],[23.3786,-110.181],[23.3697,-110.1747],[23.3615,-110.173],[23.345,-110.1705],[23.29,-110.155]];
 const TABS=['eat','beach','do','night','info'];
-const TNAME={eat:'Eat',beach:'Beaches',do:'Do',night:'Night',info:'Info'};
+const TNAME={eat:'Eat',beach:'Beaches',do:'Do',night:'Night',info:'Trip'};
 const IC={
  eat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10M17.5 21V3c-2.2 1-3.5 4-3.5 8h3.5"/></svg>',
  beach:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.2"/><path d="M2 15.5c2 0 2-1.4 4-1.4s2 1.4 4 1.4 2-1.4 4-1.4 2 1.4 4 1.4 2-1.4 4-1.4M2 20c2 0 2-1.4 4-1.4s2 1.4 4 1.4 2-1.4 4-1.4 2 1.4 4 1.4 2-1.4 4-1.4"/></svg>',
  do:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.4 5.2-5.2 2.4 2.4-5.2z"/></svg>',
  night:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.6A8.2 8.2 0 1 1 9.4 4a6.6 6.6 0 0 0 10.6 10.6z"/></svg>',
- info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.4"/></svg>',
+ info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8.5 3v4M15.5 3v4M8 14h3M8 17h6"/></svg>',
  hotel:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>',
  locate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>'
 };
@@ -443,7 +485,14 @@ const iconFor=p=>p.id==='hotel'?IC.hotel:IC[p.t];
 const inTrip=DAYS.some(x=>x.k===tsTodayKey());
 const state={tab:TABS.includes(LS.get('tab2','eat'))?LS.get('tab2','eat'):'eat',mode:'list',day:inTrip?tsTodayKey():'11/27',quiet:false,allPins:false,gps:null,sel:null};
 const favs=new Set(LS.get('favs',[])),done=new Set(LS.get('done',[]));
-const assign=LS.get('assign',{});
+const ITIN=LS.get('itin2',null)||(()=>{const o={};const a=LS.get('assign',{});for(const id in a){(o[a[id]]=o[a[id]]||[]).push({k:Math.random().toString(36).slice(2,9),id})}return o})();
+const saveItin=()=>LS.set('itin2',ITIN);
+const dayItems=k=>(ITIN[k]=ITIN[k]||[]);
+const inDay=(id,k)=>dayItems(k).some(x=>x.id===id);
+const daysOf=id=>DAYS.filter(d=>inDay(id,d.k)).map(d=>d.k);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const favGigs=new Set(LS.get('favgigs',[]));
+const assign=new Proxy({},{get:(_,id)=>{const ds=daysOf(id);return ds.includes(state.day)?state.day:ds[0]}});
 const dayName=k=>{const d=DAYS.find(x=>x.k===k);return d?d.dn:''};
 const isToday=k=>k===tsTodayKey();
 const dayObj=()=>DAYS.find(x=>x.k===state.day);
@@ -528,7 +577,7 @@ function row(p,opt){
   if(st)bits.push(`<span class="st ${st.cls}">${st.open&&isToday(state.day)?'<span class="pulse"></span>':''}${esc(st.txt)}</span>`);
   const tr=travel(p);if(tr)bits.push(tr);
   const tags=(p.res?'<span class="tag m">6:30 res</span>':'')+(p.quiet?'<span class="tag q">Local</span>':'')+(p.warn?'<span class="tag w">Swim caution</span>':'')+(p.sunset&&p.t==='beach'?'<span class="tag s">Sunset</span>':'')+(MENUS[p.id]?'<span class="tag">Menu</span>':'')+(assign[p.id]?`<span class="tag m">${assign[p.id]===state.day?'★ Your plan':'Your '+dayName(assign[p.id])}</span>`:'');
-  return `<div class="r${opt.pin?' pinrow':''}" data-act="open" data-id="${p.id}" style="animation-delay:${(opt.i||0)*30}ms"><div class="ic" style="background:var(--t-${p.t});color:var(--c-${p.t})">${iconFor(p)}</div><div class="tx"><div class="nm">${favs.has(p.id)?'★ ':''}${esc(p.n)}</div>${opt.why?`<div class="why">${esc(opt.why)}</div>`:''}<div class="ln">${tags}${bits.join(' · ')||esc(p.d)}</div></div></div>`;
+  return `<div class="r${opt.pin?' pinrow':''}" data-act="open" data-id="${p.id}" style="animation-delay:${(opt.i||0)*30}ms"><div class="ic" style="background:var(--t-${p.t});color:var(--c-${p.t})">${iconFor(p)}</div><div class="tx"><div class="nm">${esc(p.n)}</div>${opt.why?`<div class="why">${esc(opt.why)}</div>`:''}<div class="ln">${tags}${bits.join(' · ')||esc(p.d)}</div></div><button class="qs${favs.has(p.id)?' on':''}" data-act="qstar" data-id="${p.id}" aria-label="Save">${favs.has(p.id)?'★':'☆'}</button></div>`;
 }
 function suggested(type){
   const pl=PLAN[state.day];if(!pl)return [];const seen=new Set(),out=[];
@@ -546,9 +595,9 @@ function openNowBlock(type){
   return section('Open now','Closest first',open.map((p,i)=>row(p,{i})).join(''));
 }
 function mineBlock(type){
-  const mine=PLACES.filter(p=>p.t===type&&assign[p.id]===state.day);
+  const mine=PLACES.filter(p=>p.t===type&&inDay(p.id,state.day));
   if(!mine.length)return '';
-  return section('Your plan for '+dayObj().dn,'Places you assigned to this day.',mine.map((p,i)=>row(p,{i})).join(''));
+  return section('In your '+dayObj().dn+' itinerary','',mine.map((p,i)=>row(p,{i})).join(''));
 }
 function suggestBlock(type){
   const s=suggested(type);if(!s.length)return '';
@@ -560,7 +609,7 @@ function resvBlock(){
   return `<div class="rows" style="margin-top:12px">${jz?row(jz,{pin:true,why:'Tonight · '+r[0].replace(/\(.*\)/,'').trim()}):r.map(x=>`<div class="note pinrow">${esc(x)}</div>`).join('')}</div>`;
 }
 function viewEat(){
-  const all=listOf('eat');const grp=(m)=>all.filter(p=>(MEAL[p.id]||'').includes(m)).sort(byDistance);
+  const all=listOf('eat');const grp=(m)=>all.filter(p=>(MEAL[p.id]||p.meal||'').includes(m)).sort(byDistance);
   return resvBlock()+filtersHtml()+mineBlock('eat')+openNowBlock('eat')+suggestBlock('eat')+
    section('Coffee & breakfast','The hotel doesn’t serve breakfast.',grp('b').map((p,i)=>row(p,{i})).join(''))+
    section('Lunch & tacos','',grp('l').map((p,i)=>row(p,{i})).join(''))+
@@ -587,36 +636,64 @@ function viewBeach(){
    section('Sunset spots','Get there 20–30 minutes before sunset.',listOf('beach').concat([P.green]).filter(p=>p.sunset).sort(byDistance).map((p,i)=>row(p,{i})).join(''))+
    section('All beaches','',listOf('beach').sort(byDistance).map((p,i)=>row(p,{i})).join(''));
 }
-function viewDo(){return filtersHtml()+mineBlock('do')+suggestBlock('do')+section('Things to do','',listOf('do').sort(byDistance).map((p,i)=>row(p,{i})).join(''))}
+const LINKS=[['What To Do Baja','whattodobaja.com/today','https://whattodobaja.com/today','Today’s events, music and markets around Todos Santos & Cerritos'],
+ ['Live Todos Santos · this week','livetodossantos.com','https://livetodossantos.com/this-week/','Weekly guide to events, classes and live music'],
+ ['The Social Todos Santos','thesocialtodossantos.com','https://www.thesocialtodossantos.com/','Community event calendar'],
+ ['Gringo Gazette calendar','gringogazette.com','https://gringogazette.com/cal-events/','Southern Baja events'],
+ ['Tortugueros Las Playitas','todostortugueros.org','https://www.todostortugueros.org/','Turtle releases and volunteer days'],
+ ['Tripadvisor · things to do','tripadvisor.com','https://www.tripadvisor.com/Search?q=Todos%20Santos%20things%20to%20do','Reviews and tours'],
+ ['Airbnb Experiences','airbnb.com','https://www.airbnb.com/s/Todos-Santos--Baja-California-Sur--Mexico/experiences','Local-led classes, tours and food experiences'],
+ ['Viator','viator.com','https://www.viator.com/searchResults/all?text=Todos%20Santos','Bookable tours (whale sharks, surf, horseback)'],
+ ['GetYourGuide','getyourguide.com','https://www.getyourguide.com/s/?q=Todos%20Santos','More bookable tours']];
+function linksBlock(){return section('More ideas online','Opens other sites (needs signal).',LINKS.map(([n,dom,u,d],i)=>`<a class="r" href="${u}" target="_blank" rel="noopener" style="text-decoration:none;animation-delay:${i*30}ms"><div class="ic" style="background:var(--t-do);color:var(--c-do)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></div><div class="tx"><div class="nm">${n}</div><div class="ln">${d} · ${dom}</div></div></a>`).join(''))}
+function viewDo(){const near=listOf('do').filter(p=>p.lat==null||km(HOTEL,p)<=25).sort(byDistance),far=listOf('do').filter(p=>p.lat!=null&&km(HOTEL,p)>25).sort(byDistance);return filtersHtml()+mineBlock('do')+suggestBlock('do')+section('Around town','',near.map((p,i)=>row(p,{i})).join(''))+section('Day trips','Up to about 40 miles away, plus La Paz.',far.map((p,i)=>row(p,{i})).join(''))+linksBlock()}
 function viewNight(){
   const music=linesFor('music',state.day);
   const gigs=music.map((m,i)=>{const unconf=/\s\?\s/.test(' '+m+' ')||m.includes(' ? ');const clean=m.replace(/\s\?\s/,' ');const mt=clean.match(/^(\S+(?:\s(?:am|pm))?)\s+(.*)$/i);const tm=mt?mt[1]:'';const rest=mt?mt[2]:clean;const parts=rest.split(' · ');
-    return `<div class="r" style="cursor:default;animation-delay:${i*30}ms"><div class="ic" style="background:var(--t-night);color:var(--c-night)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="tx"><div class="nm" style="white-space:normal">${esc(parts[0])}</div><div class="ln">${unconf?'<span class="tag">unconfirmed</span>':''}${esc(tm)}${parts[1]?' · '+esc(parts.slice(1).join(' · ')):''}</div></div></div>`}).join('');
+    const gk=state.day+'|'+m;const gs=favGigs.has(gk);
+    return `<div class="r" style="cursor:default;animation-delay:${i*30}ms" data-gig="${esc(gk)}"><div class="ic" style="background:var(--t-night);color:var(--c-night)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="tx"><div class="nm" style="white-space:normal">${esc(parts[0])}</div><div class="ln">${unconf?'<span class="tag">unconfirmed</span>':''}${esc(tm)}${parts[1]?' · '+esc(parts.slice(1).join(' · ')):''}</div></div><button class="qs" data-act="gigplan" data-g="${esc(gk)}" title="Add to itinerary" style="font-size:22px">${dayItems(state.day).some(x=>x.gig===gk)?'✓':'+'}</button><button class="qs${gs?' on':''}" data-act="gigstar" data-g="${esc(gk)}">${gs?'★':'☆'}</button></div>`}).join('');
   return section(isToday(state.day)?'Tonight’s music':'Music on '+dayObj().dn,'From local listings. Schedules change, so check before you go.',gigs||'<div class="note">Nothing listed for this day.</div>')+
    `<div class="note"><a href="https://whattodobaja.com/today" target="_blank" rel="noopener" style="color:var(--sea);font-weight:700;text-decoration:none">Check today’s listings →</a> (needs signal)</div>`+
    filtersHtml()+mineBlock('night')+suggestBlock('night')+section('Bars & venues','Todos Santos goes quiet early. Most places close by 9–11 pm.',listOf('night').sort(byDistance).map((p,i)=>row(p,{i})).join(''));
 }
-function dayPicker(id,cls){return `<div class="${cls}">${DAYS.map(d=>`<button class="${assign[id]===d.k?'on':''}" data-act="assign" data-id="${id}" data-k="${d.k}">${d.dn}${d.k==='11/28'?' 🎂':''}</button>`).join('')}</div>`}
+function dayPicker(id,cls){return `<div class="${cls}">${DAYS.map(d=>`<button class="${inDay(id,d.k)?'on':''}" data-act="assign" data-id="${id}" data-k="${d.k}">${d.dn}${d.k==='11/28'?' 🎂':''}</button>`).join('')}</div>`}
 function savedSection(){
   const ids=[...favs].filter(id=>P[id]);
   if(!ids.length)return section('Saved places','Tap ☆ on any place to save it, then give it a day here.','<div class="note">Nothing saved yet.</div>');
   let html='';let i=0;
-  for(const d of DAYS){const list=ids.filter(id=>assign[id]===d.k);if(!list.length)continue;
+  for(const d of DAYS){const list=ids.filter(id=>inDay(id,d.k));if(!list.length)continue;
     html+=`<div class="dayhead"><b>${d.short}${d.k==='11/28'?' 🎂':''}</b><span>${list.length} place${list.length>1?'s':''}</span></div><div class="rows">`+list.map(id=>row(P[id],{i:i++})+dayPicker(id,'daypick')).join('')+'</div>'}
-  const un=ids.filter(id=>!assign[id]||!DAYS.some(d=>d.k===assign[id]));
+  const un=ids.filter(id=>!daysOf(id).length);
   if(un.length)html+=`<div class="dayhead"><b>Not assigned yet</b><span>Tap a day</span></div><div class="rows">`+un.map(id=>row(P[id],{i:i++})+dayPicker(id,'daypick')).join('')+'</div>';
-  return `<div class="sec"><h2>Saved places</h2><p class="hint">Give each one a day. They’ll show up under “Your plan” in that day’s tabs.</p></div>`+html;
+  return `<div class="sec"><h2>Saved places</h2><p class="hint">Tap a day to add a place to that day’s itinerary.</p></div>`+html+savedGigs();
 }
+function itinRows(k){
+  const items=dayItems(k);
+  if(!items.length)return `<div class="empty"><b>Nothing planned yet</b>Add saved places or your own ideas below.</div>`;
+  return items.map((it,i)=>{let nm,ln='',open='';
+    if(it.id&&P[it.id]){const p=P[it.id];nm=esc(p.n);const st=status(p);ln=(st?esc(st.txt)+' · ':'')+travel(p);open=`data-act="open" data-id="${p.id}" style="cursor:pointer"`}
+    else{nm=esc(it.text||'');ln=it.gig?'🎵 '+esc(it.venue||'Live music'):'Your idea'}
+    return `<div class="it${it.id?'':' note'}" data-row="${it.k}" style="animation-delay:${i*30}ms"><input class="tm" value="${esc(it.time||'')}" placeholder="time" data-act="ittime" data-k="${it.k}" inputmode="text"><div class="grow" ${open}><div class="nm">${nm}</div><div class="ln">${ln}</div></div><button class="ib2" data-act="itmove" data-k="${it.k}" data-v="-1" aria-label="Up">↑</button><button class="ib2" data-act="itmove" data-k="${it.k}" data-v="1" aria-label="Down">↓</button><button class="ib2" data-act="itdel" data-k="${it.k}" aria-label="Remove">✕</button></div>`}).join('');
+}
+function itinBlock(){
+  const d=dayObj();const saved=[...favs].filter(id=>P[id]&&!inDay(id,d.k));const others=PLACES.filter(p=>!favs.has(p.id)&&!inDay(p.id,d.k)&&p.id!=='hotel').sort((a,b)=>a.n.localeCompare(b.n));
+  return `<div class="sec"><h2>${d.short}${d.k==='11/28'?' 🎂':''} itinerary</h2><p class="hint">Starts blank. Add saved places or your own ideas. Times are optional.</p></div>
+  <div class="rows" id="itinRows">${itinRows(d.k)}</div>
+  <div class="add"><select data-act="itpick"><option value="">+ Add a saved place…</option>${saved.length?`<optgroup label="Saved ★">${saved.map(id=>`<option value="${id}">${esc(P[id].n)}</option>`).join('')}</optgroup>`:''}<optgroup label="All places">${others.map(p=>`<option value="${p.id}">${esc(p.n)}</option>`).join('')}</optgroup></select>
+  <div class="row"><input type="text" id="itText" placeholder="Add your own idea, e.g. sunset drinks on the deck" enterkeyhint="done"><button class="btn pri" data-act="itadd">Add</button></div>
+  <div class="row"><button class="btn" data-act="itsort">Sort by time</button><button class="btn" data-act="share">↗ Send plan</button></div></div>`;
+}
+function savedGigs(){const g=[...favGigs];if(!g.length)return '';return `<div class="dayhead"><b>Saved gigs</b><span>${g.length}</span></div><div class="rows">`+g.map(x=>{const [k,line]=x.split('|');return `<div class="note">★ ${esc(dayName(k))} · ${esc(line.replace(/\s\?\s/,' '))}</div>`}).join('')+'</div>'}
 function viewInfo(){
   const d=dayObj();
-  return resvBlock()+
+  return itinBlock()+resvBlock()+
   savedSection()+
   section('Emergency','',`<div class="kv"><b>911</b><span class="grow">Police, fire, ambulance</span><a class="btn" href="tel:911">Call</a></div><div class="kv"><b>078</b><span class="grow">Tourist help & Ángeles Verdes roadside</span><a class="btn" href="tel:078">Call</a></div><div class="kv"><b>Hotel</b><span class="grow">+52 612 145 0547</span><a class="btn" href="tel:+526121450547">Call</a></div>`+['pharm1','pharm2'].map((id,i)=>row(P[id],{i})).join(''))+
   section('Money, gas & driving','',['atm','gas1','gas2'].map((id,i)=>row(P[id],{i})).join('')+`<div class="note">Carry pesos for tacos and tips. Decline the ATM’s own exchange rate. Avoid Hwy 19 after dark if you can (no lights, wandering cattle). Todos Santos is 1 hour ahead of Portland.</div>`)+
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
   section('Offline maps','With signal, the Map tab is Google Maps. To have Google Maps work with no signal too, download the area in the Google Maps app before you go.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:14.5px"><ol style="margin:0;padding-left:20px;line-height:1.6"><li>Open the <b>Google Maps app</b> on Wi-Fi.</li><li>Tap your profile picture → <b>Offline maps</b> → <b>Select your own map</b>.</li><li>Fit the box from <b>Todos Santos down to Cerritos</b>, then <b>Download</b>.</li></ol><div class="actions"><a class="btn pri" href="https://www.google.com/maps/@23.40,-110.20,11z" target="_blank" rel="noopener">Open Google Maps</a></div><p class="mut small" style="margin:8px 0 0">Directions buttons in this app open Google Maps, so they’ll use that download. With no signal, this app’s Map tab shows a simple sketch map with your places and GPS dot.</p></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 5.1.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 6.</div>`);
 }
 
 /* ================= sheet ================= */
@@ -692,7 +769,7 @@ function clearTiles(){for(const [,im] of mapState.tiles)im.remove();mapState.til
 function mapList(){return PLACES.filter(p=>p.lat!=null&&(state.allPins||p.t===state.tab)).sort(byDistance)}
 function gUrl(o){return 'https://maps.google.com/maps?q='+encodeURIComponent(o.q)+'&z='+Math.round(o.z)+'&output=embed'}
 function gPlace(p){return {q:p.pid&&!p.approx?`${p.n.replace(/\s*[·(].*$/,'')}, ${p.lat.toFixed(5)},${p.lon.toFixed(5)}`:`${p.lat.toFixed(5)},${p.lon.toFixed(5)}`,z:p.t==='do'&&p.lat>23.6?13:16}}
-const GAREA={town:{q:'Hacienda Todos Los Santos, Todos Santos',z:15},pesc:{q:'El Pescadero, Baja California Sur',z:13},all:{q:'Todos Santos, Baja California Sur',z:11}};
+const GAREA={town:{q:'Hacienda Todos Los Santos, Todos Santos',z:15},pesc:{q:'El Pescadero, Baja California Sur',z:13},all:{q:'El Pescadero, Baja California Sur',z:10}};
 const online=()=>navigator.onLine!==false;
 function mapView(){
   const t=state.tab,on=online(),list=mapList();
@@ -842,14 +919,51 @@ document.addEventListener('click',e=>{
   else if(a==='save'){['tides','music','resv','notes'].forEach(x=>LS.set(x,$('#e-'+x).value));toast('Saved')}
   else if(a==='reset'){if(confirm('Replace tides, music and reservations with the built-in versions?')){['tides','music','resv'].forEach(LS.del);render();toast('Reset')}}
   else if(a==='wx')refreshWx(true);
-  else if(a==='assign'){const was=assign[id]===k;if(was)delete assign[id];else{assign[id]=k;if(!favs.has(id)){favs.add(id);LS.set('favs',[...favs])}burst(el)}LS.set('assign',assign);toast(was?'Removed from '+dayName(k):'Added to '+DAYS.find(d=>d.k===k).short);
+  else if(a==='assign'){const was=inDay(id,k);if(was)ITIN[k]=dayItems(k).filter(x=>x.id!==id);else{dayItems(k).push({k:uid(),id});if(!favs.has(id)){favs.add(id);LS.set('favs',[...favs])}burst(el)}saveItin();toast(was?'Removed from '+dayName(k):'Added to '+DAYS.find(d=>d.k===k).short+' itinerary');
     if($('#sheet').classList.contains('open')&&state.sel===id){const y=$('#sheet').scrollTop;openSheet(id);$('#sheet').scrollTop=y}
     if(state.mode==='list'){const y=scrollY;render();scrollTo(0,y)}}
   else if(a==='savetiles')saveTiles();
+  else if(a==='qstar'){e.stopPropagation();const on=!favs.has(id);on?favs.add(id):favs.delete(id);LS.set('favs',[...favs]);el.classList.toggle('on',on);el.textContent=on?'★':'☆';el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');if(on)burst(el);toast(on?'Saved':'Removed from saved')}
+  else if(a==='gigstar'){const g=el.dataset.g;const on=!favGigs.has(g);on?favGigs.add(g):favGigs.delete(g);LS.set('favgigs',[...favGigs]);el.classList.toggle('on',on);el.textContent=on?'★':'☆';el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');if(on)burst(el)}
+  else if(a==='gigplan'){const g=el.dataset.g;const [k,line]=g.split('|');const items=dayItems(k);const ex=items.find(x=>x.gig===g);if(ex){ITIN[k]=items.filter(x=>x!==ex);el.textContent='+';toast('Removed from itinerary')}else{const clean=line.replace(/\s\?\s/,' ');const mt=clean.match(/^(\S+(?:\s(?:am|pm))?)\s+(.*)$/i);const body=mt?mt[2]:clean;const pp=body.split(' · ');items.push({k:uid(),gig:g,text:pp[0],venue:pp.slice(1).join(' · '),time:mt&&/\d/.test(mt[1])?mt[1]:''});el.textContent='✓';burst(el);toast('Added to '+dayName(k)+' itinerary')}saveItin()}
+  else if(a==='itadd'){const t=$('#itText').value.trim();if(!t){$('#itText').focus();return}dayItems(state.day).push({k:uid(),text:t});saveItin();$('#itText').value='';refreshItin(true)}
+  else if(a==='itdel'){ITIN[state.day]=dayItems(state.day).filter(x=>x.k!==k);saveItin();refreshItin()}
+  else if(a==='itmove'){const it=dayItems(state.day);const i=it.findIndex(x=>x.k===k),j=i+(+el.dataset.v);if(j<0||j>=it.length)return;[it[i],it[j]]=[it[j],it[i]];saveItin();refreshItin();const r=document.querySelector(`[data-row="${k}"]`);if(r)r.classList.add('flash')}
+  else if(a==='itsort'){const it=dayItems(state.day);const key=x=>{const m=tmin(x.time);return m==null?9999:m};it.sort((x,y)=>key(x)-key(y));saveItin();refreshItin();toast('Sorted by time')}
+  else if(a==='share')sharePlan();
   else if(a==='savekey'){LS.set('gkey',$('#gkeyIn').value.trim());LS.set('mapProv','google');gmLoading=null;toast(gkey()?'Key saved. Map will use Google when online':'Key removed');render()}
 });
 document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.act==='memo'){const m=LS.get('memo',{});m[el.dataset.k]=el.value;LS.set('memo',m)}});
-document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.act==='photo')addPhotos(el.files,el.dataset.k)});
+document.addEventListener('change',e=>{const el=e.target;if(!el.dataset)return;
+  if(el.dataset.act==='photo')addPhotos(el.files,el.dataset.k);
+  if(el.dataset.act==='itpick'&&el.value){dayItems(state.day).push({k:uid(),id:el.value});if(!favs.has(el.value)){}saveItin();toast('Added '+P[el.value].n);refreshItin(true)}
+  if(el.dataset.act==='ittime'){const it=dayItems(state.day).find(x=>x.k===el.dataset.k);if(it){it.time=el.value.trim();saveItin()}}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='itText'){e.preventDefault();$('[data-act=itadd]').click()}});
+function tmin(t){if(!t)return null;const m=String(t).trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm|a|p)?/i);if(!m)return null;let h=+m[1];const ap=(m[3]||'').toLowerCase();if(ap.startsWith('p')&&h<12)h+=12;if(ap.startsWith('a')&&h===12)h=0;if(!ap&&h<7)h+=12;return h*60+(+m[2]||0)}
+function refreshItin(flashLast){const y=scrollY;render();scrollTo(0,y);if(flashLast){const rows=document.querySelectorAll('#itinRows .it');const r=rows[rows.length-1];if(r)r.classList.add('flash')}}
+/* ---- share plan by link ---- */
+function b64e(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function b64d(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(escape(atob(s)))}
+async function sharePlan(){
+  const data={v:1,itin:ITIN,favs:[...favs],gigs:[...favGigs]};
+  const url=location.origin+location.pathname+'#plan='+b64e(JSON.stringify(data));
+  const text='Our Todos Santos plan. Open to load it in the app:';
+  try{if(navigator.share){await navigator.share({title:'Todos Santos plan',text,url});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(url);toast('Link copied. Paste it in a text')}catch(e){prompt('Copy this link and send it:',url)}
+}
+function checkImport(){
+  const m=location.hash.match(/plan=([^&]+)/);if(!m)return;
+  let data;try{data=JSON.parse(b64d(m[1]))}catch(e){toast('That plan link looks broken');return}
+  history.replaceState(null,'',location.pathname);
+  const n=Object.values(data.itin||{}).reduce((a,x)=>a+(x?x.length:0),0);
+  $('#sheet').innerHTML=`<div class="grab"></div><h3>Load shared plan?</h3><p>This link has <b>${n} itinerary item${n===1?'':'s'}</b> and ${(data.favs||[]).length} saved places.</p><div class="actions"><button class="btn pri" id="impReplace">Replace mine</button><button class="btn" id="impMerge">Merge with mine</button><button class="btn" id="impNo">Cancel</button></div><p class="mut small">Replace makes your itinerary match exactly. Merge keeps yours and adds anything new.</p>`;
+  $('#sheet').classList.add('open');$('#scrim').classList.add('open');
+  const done=msg=>{saveItin();LS.set('favs',[...favs]);LS.set('favgigs',[...favGigs]);closeSheet();state.tab='info';state.mode='list';render();confettiSmall();toast(msg)};
+  $('#impReplace').onclick=()=>{for(const k in ITIN)delete ITIN[k];Object.assign(ITIN,data.itin||{});(data.favs||[]).forEach(f=>favs.add(f));(data.gigs||[]).forEach(g=>favGigs.add(g));done('Plan loaded')};
+  $('#impMerge').onclick=()=>{for(const k in (data.itin||{})){const cur=dayItems(k);for(const it of data.itin[k]){const dup=cur.some(x=>x.k===it.k||(it.id&&x.id===it.id)||(it.gig&&x.gig===it.gig)||(it.text&&!it.id&&!it.gig&&x.text===it.text));if(!dup)cur.push(it)}}(data.favs||[]).forEach(f=>favs.add(f));(data.gigs||[]).forEach(g=>favGigs.add(g));done('Plans merged')};
+  $('#impNo').onclick=closeSheet;
+}
+function confettiSmall(){try{confetti()}catch(e){}}
 
 /* ================= confetti ================= */
 function confetti(){
@@ -878,7 +992,7 @@ addEventListener('online',()=>{refreshWx();if(state.mode==='map'){render();toast
 addEventListener('offline',()=>{if(state.mode==='map'){render();toast('Offline. Showing the sketch map')}});
 setInterval(()=>{applyTheme();if(state.mode==='list'&&state.tab!=='info'&&!$('#sheet').classList.contains('open')){const y=scrollY;const h=document.querySelector('.hero');if(h){const tmp=document.createElement('div');tmp.innerHTML=heroHtml();h.replaceWith(tmp.firstElementChild);const dz=document.querySelector('.days');if(dz&&tmp.children[0])dz.replaceWith(tmp.children[0]);scrollTo(0,y)}}},60000);
 
-applyTheme();render();
+applyTheme();render();checkImport();addEventListener('hashchange',checkImport);
 if(isToday('11/28')&&!LS.get('cf28',false)){LS.set('cf28',true);setTimeout(confetti,600)}
 {const w=LS.get('wx4',null);if(navigator.onLine&&(!w||Date.now()-w.saved>2*3600e3))refreshWx()}
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
