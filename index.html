@@ -13,11 +13,13 @@
 <title>Todos Santos</title>
 <style>
 :root{
+  --hdr:rgba(250,247,242,.9);--navbg:rgba(255,255,255,.94);--acc2soft:rgba(31,111,122,.18);--coast:rgba(31,111,122,.45);
   --bg:#faf7f2;--card:#ffffff;--ink:#1d1b19;--mut:#77706a;--line:#ece6dd;--chip:#f3eee6;
   --acc:#d4573b;--acc2:#1f6f7a;--sun:#f2a93b;--good:#2f8a57;--warn:#c0442a;
   --sea:#d7ebee;--land:#f4efe6;--road:#d9cfc0;--shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.05);
 }
 html[data-theme=dark]{
+  --hdr:rgba(15,18,20,.9);--navbg:rgba(24,28,31,.94);--acc2soft:rgba(92,195,207,.18);--coast:rgba(92,195,207,.45);
   --bg:#0f1214;--card:#181c1f;--ink:#ecebe8;--mut:#9a9690;--line:#262b2f;--chip:#22272b;
   --acc:#ff7a5c;--acc2:#5cc3cf;--sun:#f5b852;--good:#5fcf8f;--warn:#ff8a70;
   --sea:#13262b;--land:#1b1f22;--road:#3a3f43;--shadow:none;
@@ -25,7 +27,7 @@ html[data-theme=dark]{
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink)}
 body{font:16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Roboto,sans-serif;padding-bottom:calc(76px + env(safe-area-inset-bottom));transition:background .3s,color .3s}
-header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:calc(env(safe-area-inset-top) + 10px) 18px 8px;border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:5;background:var(--hdr);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:calc(env(safe-area-inset-top) + 10px) 18px 8px;border-bottom:1px solid var(--line)}
 .hrow{display:flex;align-items:center;gap:10px}
 header h1{margin:0;font-size:22px;letter-spacing:-.02em;flex:1}
 .pill{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--chip);color:var(--mut)}
@@ -62,7 +64,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)
 textarea,input[type=text]{width:100%;font:inherit;font-size:15px;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)}
 textarea{min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
 label{display:block;font-weight:600;margin:14px 0 6px;font-size:14px}
-nav{position:fixed;bottom:0;left:0;right:0;z-index:6;display:flex;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:6;display:flex;background:var(--navbg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
 nav button{flex:1;border:0;background:none;padding:8px 2px 9px;font:inherit;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
 nav button svg{width:24px;height:24px}
 nav button.on{color:var(--acc)}
@@ -93,11 +95,26 @@ ul.clean{margin:4px 0;padding-left:18px}ul.clean li{margin:3px 0}
 </head>
 <body>
 <header><div class="hrow"><h1 id="title">Todos Santos</h1><span class="pill" id="net"></span><button class="iconbtn" id="themeBtn" aria-label="Theme"></button></div></header>
-<main id="app"></main>
+<main id="app"><div class="card" style="margin-top:20px"><h3>Loading your trip…</h3><p class="mut small">If this doesn’t change in a few seconds, <a href="#" onclick="resetApp();return false">tap here to reset the app</a>.</p></div></main>
 <div id="scrim"></div>
 <div id="sheet"></div>
 <nav id="nav"></nav>
 
+<script>
+// Safety net: if anything breaks, show the error and a reset button instead of a blank screen.
+function resetApp(){
+  try{localStorage.removeItem('tab')}catch(e){}
+  var done=function(){location.replace(location.pathname+'?r='+Date.now())};
+  var jobs=[];
+  if('serviceWorker' in navigator&&navigator.serviceWorker.getRegistrations)jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))}));
+  if(window.caches&&caches.keys)jobs.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k)}))}));
+  Promise.all(jobs).then(done,done);
+}
+window.onerror=function(msg,src,line){
+  var el=document.getElementById('app');
+  if(el)el.innerHTML='<div class="card" style="margin-top:20px"><h3>Something went wrong</h3><p class="small">'+String(msg).replace(/</g,'&lt;')+' (line '+line+')</p><p><button class="btn pri" onclick="resetApp()">Reset &amp; reload</button></p><p class="mut small">Your notes and photos are kept. Screenshot this and send it to Claude if it keeps happening.</p></div>';
+};
+</script>
 <script>
 "use strict";
 /* ================= basics ================= */
@@ -185,6 +202,54 @@ const PLACES=[
  {id:'gas1',t:'info',n:'Gas + OXXO (town)',lat:23.44586,lon:-110.22590,pid:'ChIJ0cgXGwMEr4YRzDqr9_7UWYo',d:'Gas in town with an OXXO. Takes cards. The store line can be slow.'},
  {id:'gas2',t:'info',n:'Smartgas (open 24 h)',lat:23.49433,lon:-110.20684,phone:'+526121055865',pid:'ChIJOa27neEGr4YRK-xnH1hvDYM',hours:D('24 h'),d:'On the highway toward La Paz. Watch the pump and your card.'}
 ];
+
+/* ================= menus (MXN; from restaurant sites & listings — prices change) ================= */
+const MENUS={
+ jaza:{src:'jazamango.mx menu, checked Nov 2026',s:[
+  ['Cold starters',[['Baja oysters (6)',415,'raspberry mignonette, serrano'],['Tuna tostada',350,'macha XO, avocado, shrimp'],['Tuna & yellowtail crudo',510,'capers, olives, crostini'],['Jazamango ceviche',375,'catch of the day, miso-yuzu'],['Passionfruit aguachile',450,'Pacific shrimp, cucumber, pear'],['House guacamole',380,'garden greens, beef jerky'],['Zucchini carpaccio',280,'parmesan, arugula'],['Seasonal greens salad',300,'citrus, pumpkin seeds']]],
+  ['Warm starters',[['Wood-grilled chocolate clams (4)',420,'smoked butter, charred serrano'],['Aged beef tartare',550,'sourdough, cured yolk'],['Grilled bone marrow (4)',585,'black garlic glaze'],['Adobada shrimp tacos (2)',350,'blue corn'],['Short rib empanadas (2)',250,'wood-fired, chimichurri'],['Cauliflower tempura',350,'peanut sauce'],['Tamal colado',350,'squash, eggplant purée'],['Roasted beet salad',350,'pistachio, grapefruit, jocoque'],['Roasted Brussels sprouts',350,'parmesan, garlic aioli']]],
+  ['Wood-fired pizza',[['Pizza Jazamango',380,'pesto, meatballs, mushrooms'],['Margherita',350,'mozzarella, garden basil'],['Mediterranean',380,'feta, pesto, chicken'],['Pepperoni',350,'pickled jalapeño']]],
+  ['Mains',[['Pappardelle',450,'beef cheek ragù'],['Curry fish of the day',600,'carrot curry, herbed rice'],['Prime beef burger',400,'cheddar, fries'],['Grilled octopus',590,'saffron risotto'],['Suckling pig terrine',600,'Oaxacan mole, blue corn'],['Organic chicken',700,'Cajun style, fried rice'],['Zarandeado kampachi (whole)',1200,'smoked chile, to share'],['Prime ribeye',1450,'mash, mushrooms, asparagus'],['6-hr braised short rib',1600,'cauliflower purée']]],
+  ['Desserts',[['Corn cake',160,'vanilla ice cream'],['Chocolate cake',160,'salted caramel, banana ice cream'],['Citrus panna cotta',160,'pistachio'],['Mexican flan',160,'guava compote']]]]},
+ green:{src:'thegreenroombcs.com menu, checked Nov 2026 · one listing says tax is included',s:[
+  ['Starters',[['Rosarito Beach Rolls',360,'chimichanga, shrimp or smoked tuna'],['Abreojos dumplings',385,'shrimp, coconut-chile cream'],['Salsipuedes temaris',395,'salmon, tuna, yellowtail'],['Harry’s empanadas',385,'plant-based, passionfruit'],['Guacamole',390,'house chips'],['Calafia sashimi',420,'catch of the day, citrus soy']]],
+  ['Salads',[['San Isidro',340,'greens, cheeses, apple'],['Baja Malibu',385,'goat cheese, seared tuna']]],
+  ['Tostadas',[['The Rock (2)',295,'tempura shrimp'],['Magbay (3)',330,'tuna, shrimp, guacamole'],['Point Break (3)',295,'ceviche style'],['K38 (3)',340,'flank steak']]],
+  ['Tacos',[['Classic',290,'fish, shrimp or flank steak'],['San Miguel',340,'bacon-wrapped shrimp'],['3M’s Rajas',455,'shrimp & poblano']]],
+  ['Mains',[['Salmón La Fortuna',720,'teriyaki, miso'],['K-55 flank steak',720,'plantain mash'],['Pescadero Beach skewers (3)',720,'Thai-style glaze']]],
+  ['Specials (if available)',[['Zipper tacos (4)',460,'sesame tuna or salmon'],['Stacks tapas',460,'flank on crispy rice'],['San Quintín croquettes (5)',460,'shrimp, yuzu aioli']]],
+  ['Desserts',[['Classic flan',250,''],['Corn flan',250,'lavender, dulce de leche'],['Ice cream sandwich',250,'']]],
+  ['Drinks',[['Margarita / Mezcalita',250,''],['Signature cocktails',350,'e.g. mezcal-grapefruit-basil'],['Aperol spritz',240,''],['Beer',110,'Ultra, Bohemia, XX'],['House wine (glass)',180,''],['Soda / agua fresca',80,'']]]]},
+ mejibo:{src:'OpenTable menu (breakfast & brunch); dinner items from an older owner listing',s:[
+  ['Breakfast',[['Chilaquiles',190,'+chicken 75 · +steak 95'],['Huevos rancheros',195,''],['Eggs Benedict',230,'morita chile oil'],['Machaca with eggs',210,''],['Avocado toast',210,'egg, macha salsa'],['Stracciatella & smoked salmon toast',225,''],['Hotcake',190,'seasonal fruit'],['Açaí bowl',230,'']]],
+  ['Brunch & mains',[['Baja fish or shrimp tacos (3)',215,'squid-ink tartar'],['Cheeseburger (wagyu blend)',250,''],['Crispy chicken sandwich',220,''],['Green aguachile',230,'shrimp or hearts of palm'],['Ceviche',230,'habanero leche de tigre, mango'],['Quinoa bowl',310,'miso-glazed fish'],['Poke bowl',235,'catch of the day'],['Beef milanesa',290,'']]],
+  ['Dinner (older listing)',[['Smoked pineapple carpaccio',195,'feta, dates'],['Sashimi serrantino',210,'ponzu, serrano'],['Cured fish tataki',220,'yuzu ponzu'],['Veggie roll',190,''],['Flank steak (11.6 oz)',530,''],['Ribeye (16.6 oz)',895,'']]],
+  ['Coffee & drinks',[['Espresso',60,''],['Americano',65,''],['Latte / flat white',75,''],['Fresh juice',90,''],['Mimosa',110,'']]]]},
+ jazacafe:{src:'owner menu on Restaurant Guru (about a year old)',s:[
+  ['Small plates',[['Baja oysters (6)',375,''],['Kampachi & shrimp tostada',280,'macha XO, avocado'],['Tiradito of the day',275,'Punta Lobos catch, yuzu'],['Herb guacamole',300,'beef jerky tostada'],['Soup of the day',180,''],['Pizza Jazamango',300,'']]]],note:'A food blog puts breakfast mains at about 200–300 pesos.'},
+ agricole:{src:'owner menu on Restaurant Guru (recent) · pizzas only',s:[
+  ['Wood-fired pizza',[['Del Huerto',320,'farm vegetables'],['Margarita',380,'basil, mozzarella'],['Cuatro formaggi',460,'goat, gorgonzola, ricotta'],['Casanova',480,'ham, peperonata, portobello']]]],note:'Reviewers also recommend the house pasta, beet salad and catch of the day (no prices found).'},
+ hierba:{src:'older third-party listing. Reviewers say prices have gone up since',s:[
+  ['Sample dishes',[['Guacamole & chips',143,''],['Garden salad with smoked fish',212,''],['Grilled veggie plate',201,''],['Enchiladas Zihuatanejo style',224,''],['Pizza Buona',224,''],['Flank steak',315,'']]]],note:'Known for catch of the day with green mole, carrot-ricotta ravioli, wood-fired pizza and coconut flan.'}
+};
+const PRICE_NOTES={
+ adobes:'No full menu online. TripAdvisor puts mains at about US$15–30; one reviewer mentions a 160-peso margarita.',
+ p62:'No menu online. Restaurant Guru lists about 430–860 pesos per person. The sourdough pizzas are big enough to share.',
+ miguel:'No menu online. It’s cheap. Order by the taco, by the kilo or half kilo, or by peso amount (e.g. “200 pesos worth”).',
+ beans:'No menu online. An older listing says about US$30 per person. Pour-overs, chilaquiles and French toast get good reviews.',
+ caffe:'No menu prices found online. Known for giant cinnamon buns, omelets and coffee with free refills.',
+ brew:'No menu prices found online. Burgers, wings, fish & chips, and beer flights.',
+ chava:'No menu online. Cheap and cheerful ceviche.'
+};
+function menuHtml(p){
+  const m=MENUS[p.id],n=PRICE_NOTES[p.id];
+  if(!m&&!n)return '';
+  if(!m)return `<h3 style="margin-top:14px">Menu & prices</h3><p class="small">${esc(n)}</p>`;
+  return `<details style="margin-top:12px"><summary style="font-weight:700;font-size:16px;cursor:pointer">Menu & prices (MXN)</summary>
+   ${m.s.map(([sec,items])=>`<div style="margin-top:10px"><div class="mut small" style="text-transform:uppercase;letter-spacing:.06em;font-weight:700">${esc(sec)}</div>${items.map(([nm,pr,ds])=>`<div class="row" style="padding:5px 0;border-bottom:1px solid var(--line)"><div class="grow"><div style="font-size:15px">${esc(nm)}</div>${ds?`<div class="mut small">${esc(ds)}</div>`:''}</div><div style="font-weight:600;font-variant-numeric:tabular-nums">$${pr.toLocaleString('en-US')}</div></div>`).join('')}</div>`).join('')}
+   ${m.note?`<p class="small" style="margin-top:8px">${esc(m.note)}</p>`:''}<p class="mut small">Source: ${esc(m.src)}. Prices change, so treat these as a guide.</p></details>`;
+}
+
 const P=Object.fromEntries(PLACES.map(p=>[p.id,p]));
 const TYPES={eat:['Eat','#e0703f'],beach:['Beaches','#1f8a96'],do:['Do','#7a5cc7'],night:['Night','#3d4fb8'],info:['Info','#6b6b6b']};
 
@@ -255,7 +320,7 @@ function applyTheme(){
   $('#themeBtn').innerHTML=m==='dark'?'🌙':m==='light'?'☀️':m==='sunset'?'🌅':'🌓';
   $('#themeBtn').title='Theme: '+m;
 }
-matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',applyTheme);
+try{const mq=matchMedia('(prefers-color-scheme: dark)');if(mq.addEventListener)mq.addEventListener('change',applyTheme);else if(mq.addListener)mq.addListener(applyTheme)}catch(e){}
 $('#themeBtn').onclick=()=>{const i=THEMES.indexOf(LS.get('theme','auto'));LS.set('theme',THEMES[(i+1)%THEMES.length]);applyTheme();toast('Theme: '+{auto:'follow phone',light:'light',dark:'night',sunset:'night after sunset'}[LS.get('theme')])};
 
 /* ================= icons ================= */
@@ -274,7 +339,7 @@ function hoursTag(p,day){const h=hoursOn(p,day.dow);if(h===undefined)return'';re
 const gmaps=p=>p.pid?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n)}&query_place_id=${p.pid}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+' Todos Santos')}`;
 const gdir=p=>p.lat!=null?`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}`:gmaps(p);
 const trip=p=>`https://www.tripadvisor.com/Search?q=${encodeURIComponent(p.n.replace(/\(.*\)/,'')+' Todos Santos')}`;
-function tags(p){return (p.res?'<span class="tag res">Reserved 6:30</span>':'')+(p.quiet?'<span class="tag quiet">Less touristy</span>':'')+(p.warn?'<span class="tag warn">Swim caution</span>':'')+(p.sunset?'<span class="tag">🌅 Sunset spot</span>':'')+(favs.has(p.id)?'<span class="tag">★ Saved</span>':'')+(done.has(p.id)?'<span class="tag">✓ Been</span>':'')}
+function tags(p){return (p.res?'<span class="tag res">Reserved 6:30</span>':'')+(p.quiet?'<span class="tag quiet">Less touristy</span>':'')+(p.warn?'<span class="tag warn">Swim caution</span>':'')+(p.sunset?'<span class="tag">🌅 Sunset spot</span>':'')+(favs.has(p.id)?'<span class="tag">★ Saved</span>':'')+(done.has(p.id)?'<span class="tag">✓ Been</span>':'')+(MENUS[p.id]?'<span class="tag res">Menu</span>':'')}
 function placeCard(p){
   const day=DAYS.find(x=>x.k===state.day);
   return `<div class="card" data-act="open" data-id="${p.id}" style="cursor:pointer"><div class="row"><div class="grow"><h3>${esc(p.n)}</h3></div><span class="mut small">${travel(p)}</span></div>${tags(p)}${hoursTag(p,day)}<p class="mut">${esc(p.d)}</p></div>`;
@@ -284,7 +349,7 @@ function openSheet(id){
   const note=LS.get('pnote',{})[id]||'';
   let hrs='';if(p.hours)hrs='<p class="small"><b>Hours</b> · '+DAYS.map(d=>`${d.short.split(' ')[0]} ${p.hours[d.dow]?esc(p.hours[d.dow]):'<span style="color:var(--warn)">closed</span>'}`).join(' · ')+'<br><span class="mut">From Google listings. Confirm before driving out.</span></p>';
   $('#sheet').innerHTML=`<div class="grab"></div><div class="row"><div class="grow"><h3 style="margin:0;font-size:20px">${esc(p.n)}</h3><span class="mut small">${TYPES[p.t][0]}${p.lat!=null?' · '+travel(p)+' from hotel':''}${state.gps&&p.lat!=null?' · '+travel(p,state.gps)+' from you':''}${p.approx?' · pin approximate':''}</span></div><button class="iconbtn" data-act="close">✕</button></div>
-  <div style="margin-top:6px">${tags(p)}${hoursTag(p,day)}</div><p>${esc(p.d)}</p>${hrs}
+  <div style="margin-top:6px">${tags(p)}${hoursTag(p,day)}</div><p>${esc(p.d)}</p>${hrs}${menuHtml(p)}
   <div class="actions">
    <button class="btn ${favs.has(id)?'on':''}" data-act="fav" data-id="${id}">${favs.has(id)?'★ Saved':'☆ Save'}</button>
    <button class="btn ${done.has(id)?'on':''}" data-act="done" data-id="${id}">${done.has(id)?'✓ Been there':'Been there?'}</button>
@@ -311,7 +376,7 @@ function tideChart(td){
     let f;if(a&&b){const k=(m-a.min)/(b.min-a.min);f=a.ft+(b.ft-a.ft)*(1-Math.cos(Math.PI*k))/2}else f=(a||b).ft;d+=(m?'L':'M')+x(m).toFixed(1)+','+y(f).toFixed(1)}
   const now=isToday(state.day)?`<line x1="${x(tsMinutes())}" x2="${x(tsMinutes())}" y1="0" y2="${Hh}" stroke="var(--acc)" stroke-width="1.5" stroke-dasharray="3 3"/>`:'';
   const s=sunTimes(DAYS.find(q=>q.k===state.day).d);
-  return `<svg class="tidechart" viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none"><rect x="0" y="0" width="${x(s.rise)}" height="${Hh}" fill="var(--chip)"/><rect x="${x(s.set)}" y="0" width="${W-x(s.set)}" height="${Hh}" fill="var(--chip)"/><path d="${d}L${W},${Hh}L0,${Hh}Z" fill="color-mix(in srgb,var(--acc2) 18%,transparent)"/><path d="${d}" fill="none" stroke="var(--acc2)" stroke-width="2"/>${now}</svg><div class="row mut small"><span class="grow">12 am</span><span class="grow" style="text-align:center">noon</span><span>12 am</span></div>`;
+  return `<svg class="tidechart" viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none"><rect x="0" y="0" width="${x(s.rise)}" height="${Hh}" fill="var(--chip)"/><rect x="${x(s.set)}" y="0" width="${W-x(s.set)}" height="${Hh}" fill="var(--chip)"/><path d="${d}L${W},${Hh}L0,${Hh}Z" fill="var(--acc2soft)"/><path d="${d}" fill="none" stroke="var(--acc2)" stroke-width="2"/>${now}</svg><div class="row mut small"><span class="grow">12 am</span><span class="grow" style="text-align:center">noon</span><span>12 am</span></div>`;
 }
 function countdownHtml(day,plan){
   if(!isToday(day.k))return '';
@@ -337,7 +402,7 @@ function viewToday(){
   html+=memoriesCard(day);
   return html;
 }
-function planList(plan){return (plan?.items||[]).map(([t,x,id])=>`<div class="tl"><div class="t">${esc(t)}</div><div class="x">${esc(x)}${id&&P[id]?` <a class="link" data-act="open" data-id="${id}">›</a>`:''}${id&&P[id]?hoursWarn(P[id]):''}</div></div>`).join('')}
+function planList(plan){return ((plan&&plan.items)||[]).map(([t,x,id])=>`<div class="tl"><div class="t">${esc(t)}</div><div class="x">${esc(x)}${id&&P[id]?` <a class="link" data-act="open" data-id="${id}">›</a>`:''}${id&&P[id]?hoursWarn(P[id]):''}</div></div>`).join('')}
 function hoursWarn(p){const day=DAYS.find(x=>x.k===state.day);return hoursOn(p,day.dow)===null?' <span class="tag closed">closed this day</span>':''}
 function memoriesCard(day){return `<h2>Memories</h2><div class="card"><div class="row"><h3 class="grow">${day.k==='11/28'?'Birthday photos & notes':'Photos & notes'}</h3><label class="btn" style="margin:0">+ Photo<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${day.k}"></label></div><div class="photos" id="ph-${day.k.replace('/','-')}"></div><label>Note</label><textarea data-act="memo" data-k="${day.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[day.k]||'')}</textarea><p class="mut small">Saved on this phone only.</p></div>`}
 function wxDesc(c){if(c===0)return'Clear';if(c<=2)return'Mostly sunny';if(c===3)return'Cloudy';if(c<=48)return'Fog';if(c<=57)return'Drizzle';if(c<=67)return'Rain';if(c<=82)return'Showers';return'Storms'}
@@ -371,7 +436,7 @@ function viewInfo(){
   <label>Trip notes</label><textarea id="e-notes" style="min-height:70px;font-family:inherit">${esc(data('notes'))}</textarea>
   <div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>
   <h2>Saved places</h2><div class="card">${[...favs].map(id=>P[id]?`<p><a class="link" data-act="open" data-id="${id}">★ ${esc(P[id].n)}</a></p>`:'').join('')||'<p class="mut small">Tap ☆ Save on any place.</p>'}</div>
-  <h2>App</h2><div class="card"><p class="small" id="offl">Checking offline status…</p><div class="actions"><button class="btn" data-act="wx">Refresh forecast</button><button class="btn" data-act="theme">Theme: ${LS.get('theme','auto')}</button></div><p class="mut small">To install: open in Safari → Share → Add to Home Screen. Then test it in airplane mode.</p></div>`;
+  <h2>App</h2><div class="card"><p class="small" id="offl">Checking offline status…</p><div class="actions"><button class="btn" data-act="wx">Refresh forecast</button><button class="btn" onclick="resetApp()">Reset app</button><button class="btn" data-act="theme">Theme: ${LS.get('theme','auto')}</button></div><p class="mut small">To install: open in Safari → Share → Add to Home Screen. Then test it in airplane mode.</p><p class="mut small">Version 3</p></div>`;
 }
 
 /* ================= map ================= */
@@ -392,7 +457,7 @@ function drawMap(){
   const svg=$('#map');if(!svg)return;const vb=state.vb;svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
   const u=vb.w/100; // ~1% of view width
   const coast=COAST.map(c=>px(...c));
-  const sea=`M${-200},${-200} L${coast[0][0]},${-200} `+coast.map(c=>`L${c[0]},${c[1]}`).join(' ')+` L${coast.at(-1)[0]},${MAPH+200} L${-200},${MAPH+200} Z`;
+  const sea=`M${-200},${-200} L${coast[0][0]},${-200} `+coast.map(c=>`L${c[0]},${c[1]}`).join(' ')+` L${coast[coast.length-1][0]},${MAPH+200} L${-200},${MAPH+200} Z`;
   const road='M'+ROAD.map(c=>px(...c).join(',')).join(' L');
   const show=p=>p.lat!=null&&(state.mapf==='all'||(state.mapf==='fav'?favs.has(p.id):p.t===state.mapf));
   const labels=vb.w<30;
@@ -401,7 +466,7 @@ function drawMap(){
     pins+=`<g data-act="open" data-id="${p.id}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${r*2.2}" fill="transparent"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="var(--card)" stroke-width="${0.6*u}"/>${p.id==='hotel'?`<text x="${x}" y="${y+0.9*u}" font-size="${2.6*u}" text-anchor="middle" fill="#fff">★</text>`:''}${favs.has(p.id)?`<circle cx="${x+r}" cy="${y-r}" r="${0.8*u}" fill="var(--sun)"/>`:''}${labels||p.id==='hotel'?`<text x="${x+r+1*u}" y="${y+1*u}" font-size="${2.3*u}" fill="var(--ink)" stroke="var(--land)" stroke-width="${0.8*u}" paint-order="stroke" font-weight="600">${esc(p.n.replace(/\s*\(.*\)/,''))}</text>`:''}</g>`}
   let me='';if(state.gps){const [x,y]=px(state.gps.lat,state.gps.lon);me=`<circle cx="${x}" cy="${y}" r="${Math.max(1.2*u,(state.gps.acc||30)/111)}" fill="rgba(66,133,244,.18)"/><circle cx="${x}" cy="${y}" r="${1.5*u}" fill="#4285f4" stroke="#fff" stroke-width="${0.6*u}"/>`}
   const town=(lat,lon,n)=>{const [x,y]=px(lat,lon);return `<text x="${x}" y="${y}" font-size="${3.4*u}" fill="var(--mut)" font-weight="700" letter-spacing="${0.2*u}" text-anchor="middle" opacity=".8">${n}</text>`};
-  svg.innerHTML=`<rect x="-300" y="-300" width="${MAPW+600}" height="${MAPH+600}" fill="var(--land)"/><path d="${sea}" fill="var(--sea)"/><path d="${'M'+coast.map(c=>c.join(',')).join(' L')}" fill="none" stroke="color-mix(in srgb,var(--acc2) 45%,transparent)" stroke-width="${0.5*u}"/><path d="${road}" fill="none" stroke="var(--road)" stroke-width="${1.4*u}" stroke-linecap="round" stroke-linejoin="round"/>
+  svg.innerHTML=`<rect x="-300" y="-300" width="${MAPW+600}" height="${MAPH+600}" fill="var(--land)"/><path d="${sea}" fill="var(--sea)"/><path d="${'M'+coast.map(c=>c.join(',')).join(' L')}" fill="none" stroke="var(--coast)" stroke-width="${0.5*u}"/><path d="${road}" fill="none" stroke="var(--road)" stroke-width="${1.4*u}" stroke-linecap="round" stroke-linejoin="round"/>
   ${vb.w>30?town(23.462,-110.196,'TODOS SANTOS')+town(23.392,-110.172,'EL PESCADERO')+town(23.322,-110.168,'CERRITOS'):''}${(()=>{const [x,y]=px(23.40,-110.275);return `<text x="${x}" y="${y}" font-size="${4*u}" fill="var(--acc2)" opacity=".6" font-style="italic" text-anchor="middle">Pacific</text>`})()}
   ${(()=>{const [x,y]=px(23.425,-110.208);return `<text x="${x}" y="${y}" font-size="${2.4*u}" fill="var(--mut)" transform="rotate(-55 ${x} ${y})">Hwy 19 (approx.)</text>`})()}
   ${pins}${me}`;
