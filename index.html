@@ -40,20 +40,20 @@ a{color:inherit}
 .seg .thumb{position:absolute;top:2px;bottom:2px;border-radius:8px;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.12);transition:left .25s cubic-bezier(.3,1.4,.5,1),width .25s}
 .ib{border:0;background:var(--chip);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:16px}
 /* hero weather */
-.hero{position:relative;color:#fff;padding:18px 18px 12px;overflow:hidden;transition:background 1.2s}
-.hero .place{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
-.hero .main{display:flex;align-items:center;gap:12px;margin-top:2px}
-.hero .temp{font-size:72px;font-weight:200;letter-spacing:-.05em;line-height:1}
-.hero .cond{font-size:18px;font-weight:600}
-.hero .sub{font-size:14px;opacity:.9}
-.hero .wxi{width:76px;height:76px;margin-left:auto;flex:none}
-.hourly{display:flex;gap:16px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none;border-top:1px solid rgba(255,255,255,.25);margin-top:12px}
+.hero{position:relative;color:#fff;padding:10px 14px 8px;overflow:hidden;transition:background 1.2s}
+.hrow1{display:flex;align-items:center;gap:8px}
+.hero .wxi{width:40px;height:40px;flex:none}
+.hero .temp{font-size:40px;font-weight:300;letter-spacing:-.04em;line-height:1}
+.hmeta{flex:1;min-width:0;line-height:1.25}
+.hero .cond{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero .sub{font-size:12.5px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hchips{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex:none}
+.hchip{font-size:11.5px;font-weight:700;background:rgba(255,255,255,.2);padding:3px 8px;border-radius:99px;white-space:nowrap}
+.hourly{display:flex;gap:14px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none;border-top:1px solid rgba(255,255,255,.22);margin-top:8px}
 .hourly::-webkit-scrollbar{display:none}
-.hourly div{flex:none;text-align:center;font-size:13px;min-width:34px}
-.hourly b{display:block;font-size:15px;font-weight:600}
-.hourly svg{width:26px;height:26px;display:block;margin:3px auto}
-.chiprow{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
-.hchip{font-size:12.5px;font-weight:600;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:99px;white-space:nowrap}
+.hourly div{flex:none;text-align:center;font-size:11.5px;min-width:30px;opacity:.95}
+.hourly b{display:block;font-size:13.5px;font-weight:700}
+.hourly svg{width:20px;height:20px;display:block;margin:2px auto}
 .days{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding:10px 12px 0;background:var(--bg);border-bottom:1px solid var(--line)}
 .days::-webkit-scrollbar{display:none}
 .days button{flex:none;border:0;background:none;padding:8px 10px 10px;font-size:14px;font-weight:600;color:var(--mut);position:relative;cursor:pointer}
@@ -546,26 +546,26 @@ function skyGradient(){
 }
 function heroHtml(){
   const d=dayObj(),w=wxData(),today=isToday(d.k),s=sunTimes(d.d),t=tsMinutes();
-  let temp='—',cond='Forecast loads when you’re online',sub='',icon=wxIcon(null,true),hourly='';
+  let temp='–',lbl=today?'Now':'High',cond='Forecast loads when online',hl='',uv=null,icon=wxIcon(null,true),hourly='';
   if(w){const W=w.daily,i=W.time.indexOf(d.d);const g=k=>(Array.isArray(W[k])&&W[k][i]!=null)?W[k][i]:null;
     if(i>=0&&g('temperature_2m_max')!=null){
       const c=w.current&&today?w.current:null;
       temp=Math.round(c&&c.temperature_2m!=null?c.temperature_2m:g('temperature_2m_max'))+'°';
       const code=c&&c.weather_code!=null?c.weather_code:g('weather_code');
-      const isDay=c&&c.is_day!=null?!!c.is_day:true;
-      cond=wxDesc(code);icon=wxIcon(code,isDay);
-      sub=`H ${Math.round(g('temperature_2m_max'))}° · L ${Math.round(g('temperature_2m_min'))}°`+(g('wind_speed_10m_max')!=null?` · wind ${Math.round(g('wind_speed_10m_max'))} mph`:'')+(g('uv_index_max')!=null?` · UV ${Math.round(g('uv_index_max'))}`:'')+(g('precipitation_probability_max')?` · rain ${g('precipitation_probability_max')}%`:'');
+      cond=wxDesc(code);icon=wxIcon(code,c&&c.is_day!=null?!!c.is_day:true);
+      hl=`H ${Math.round(g('temperature_2m_max'))}° L ${Math.round(g('temperature_2m_min'))}°`+(g('precipitation_probability_max')?` · rain ${g('precipitation_probability_max')}%`:'');
+      uv=g('uv_index_max');
       const H=w.hourly;
-      if(H&&Array.isArray(H.time)){const items=[];for(let j=0;j<H.time.length;j++){const ht=H.time[j];if(ht.slice(0,10)!==d.d)continue;const hr=+ht.slice(11,13);if(today?hr<Math.floor(t/60):hr<7)continue;if(!today&&hr>22)continue;items.push(`<div>${items.length===0&&today?'Now':fmt(hr*60).replace(' ','')}<svg viewBox="0 0 24 24">${wxIcon(H.weather_code[j],!!H.is_day[j],false).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg><b>${Math.round(H.temperature_2m[j])}°</b></div>`)}
+      if(H&&Array.isArray(H.time)){const items=[];for(let j=0;j<H.time.length;j++){const ht=H.time[j];if(ht.slice(0,10)!==d.d)continue;const hr=+ht.slice(11,13);if(today?hr<Math.floor(t/60):hr<7)continue;if(!today&&hr>22)continue;
+          items.push(`<div><span>${items.length===0&&today?'Now':fmt(hr*60).replace(' ','')}</span><svg viewBox="0 0 24 24">${wxIcon(H.weather_code[j],!!H.is_day[j],false).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg><b>${Math.round(H.temperature_2m[j])}°</b></div>`)}
         hourly=items.slice(0,16).join('')}
-    }else cond='Forecast for this day appears closer to the date';
+    }else cond='Forecast appears closer to the date';
   }
-  const before=!inTrip&&tsDateStr()<DAYS[0].d;const togo=before?Math.round((Date.parse(DAYS[0].d)-Date.parse(tsDateStr()))/864e5):0;
-  const sunChip=today&&t<s.set?`🌅 Sunset ${fmt(s.set)} · in ${dur(s.set-t)}`:`🌅 Sunset ${fmt(s.set)}`;
-  const g=skyGradient();
-  return `<div class="hero" style="background:${g[0]}"><div class="place">Todos Santos · ${today?'Today':d.short}</div>
-   <div class="main"><div><div class="temp">${temp}</div><div class="cond">${esc(cond)}</div><div class="sub">${sub}</div></div>${icon}</div>
-   <div class="chiprow"><span class="hchip">${sunChip}</span>${before?`<span class="hchip">✈︎ ${togo} day${togo===1?'':'s'} to go</span>`:''}${d.k==='11/28'?'<span class="hchip">🎂 Birthday</span>':''}${w?`<span class="hchip" style="opacity:.8">Updated ${ago(w.saved)}</span>`:''}</div>
+  const sunTxt=today&&t<s.set?`🌅 ${fmt(s.set)} · ${dur(s.set-t)}`:`🌅 ${fmt(s.set)}`;
+  const g2=skyGradient();
+  return `<div class="hero" style="background:${g2[0]}">
+   <div class="hrow1">${icon}<div class="temp">${temp}</div><div class="hmeta"><div class="cond">${esc(cond)}</div><div class="sub">${lbl==='Now'?hl:hl.replace(/^H \d+° /,'High · ')}</div></div>
+     <div class="hchips"><span class="hchip">${sunTxt}</span>${uv!=null?`<span class="hchip">UV ${Math.round(uv)}</span>`:''}</div></div>
    ${hourly?`<div class="hourly">${hourly}</div>`:''}</div>
    <div class="days">${DAYS.map(x=>`<button class="${x.k===state.day?'on':''}" data-act="day" data-k="${x.k}">${x.short}${x.k==='11/28'?' 🎂':''}${isToday(x.k)?'<span class="dot"></span>':''}</button>`).join('')}</div>`;
 }
@@ -693,7 +693,7 @@ function viewInfo(){
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
   section('Offline maps','With signal, the Map tab is Google Maps. To have Google Maps work with no signal too, download the area in the Google Maps app before you go.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:14.5px"><ol style="margin:0;padding-left:20px;line-height:1.6"><li>Open the <b>Google Maps app</b> on Wi-Fi.</li><li>Tap your profile picture → <b>Offline maps</b> → <b>Select your own map</b>.</li><li>Fit the box from <b>Todos Santos down to Cerritos</b>, then <b>Download</b>.</li></ol><div class="actions"><a class="btn pri" href="https://www.google.com/maps/@23.40,-110.20,11z" target="_blank" rel="noopener">Open Google Maps</a></div><p class="mut small" style="margin:8px 0 0">Directions buttons in this app open Google Maps, so they’ll use that download. With no signal, this app’s Map tab shows a simple sketch map with your places and GPS dot.</p></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 6.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 6.1.</div>`);
 }
 
 /* ================= sheet ================= */
