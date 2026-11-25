@@ -158,6 +158,13 @@ html[data-theme=dark] .tile.fb{filter:invert(.92) hue-rotate(180deg) brightness(
 .card .ln{font-size:12.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card .more{border:0;background:var(--chip);border-radius:9px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer;flex:none}
 .offtag{position:absolute;left:12px;bottom:118px;z-index:6;background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px}
+.r:has(+ .daypick){border-bottom:0;padding-bottom:6px}
+.daypick{display:flex;gap:6px;padding:0 16px 12px 68px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.daypick button,.sdays button{border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 11px;font-size:12.5px;font-weight:700;color:var(--mut);cursor:pointer;transition:all .2s}
+.daypick button.on,.sdays button.on{background:var(--acc);border-color:var(--acc);color:#fff;animation:pop .35s cubic-bezier(.3,1.8,.5,1)}
+.sdays{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.dayhead{display:flex;align-items:baseline;gap:8px;padding:14px 16px 6px}
+.dayhead b{font-size:16px}.dayhead span{color:var(--mut);font-size:13px}
 /* sheet */
 #scrim{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .25s}
 #scrim.open{opacity:1;pointer-events:auto}
@@ -436,6 +443,8 @@ const iconFor=p=>p.id==='hotel'?IC.hotel:IC[p.t];
 const inTrip=DAYS.some(x=>x.k===tsTodayKey());
 const state={tab:TABS.includes(LS.get('tab2','eat'))?LS.get('tab2','eat'):'eat',mode:'list',day:inTrip?tsTodayKey():'11/27',quiet:false,allPins:false,gps:null,sel:null};
 const favs=new Set(LS.get('favs',[])),done=new Set(LS.get('done',[]));
+const assign=LS.get('assign',{});
+const dayName=k=>{const d=DAYS.find(x=>x.k===k);return d?d.dn:''};
 const isToday=k=>k===tsTodayKey();
 const dayObj=()=>DAYS.find(x=>x.k===state.day);
 function here(){const g=state.gps;if(g&&g.lat<24.4&&g.lat>23.2&&g.lon>-110.45&&g.lon<-110.0)return g;return null}
@@ -518,7 +527,7 @@ function row(p,opt){
   opt=opt||{};const st=status(p);const bits=[];
   if(st)bits.push(`<span class="st ${st.cls}">${st.open&&isToday(state.day)?'<span class="pulse"></span>':''}${esc(st.txt)}</span>`);
   const tr=travel(p);if(tr)bits.push(tr);
-  const tags=(p.res?'<span class="tag m">6:30 res</span>':'')+(p.quiet?'<span class="tag q">Local</span>':'')+(p.warn?'<span class="tag w">Swim caution</span>':'')+(p.sunset&&p.t==='beach'?'<span class="tag s">Sunset</span>':'')+(MENUS[p.id]?'<span class="tag">Menu</span>':'');
+  const tags=(p.res?'<span class="tag m">6:30 res</span>':'')+(p.quiet?'<span class="tag q">Local</span>':'')+(p.warn?'<span class="tag w">Swim caution</span>':'')+(p.sunset&&p.t==='beach'?'<span class="tag s">Sunset</span>':'')+(MENUS[p.id]?'<span class="tag">Menu</span>':'')+(assign[p.id]?`<span class="tag m">${assign[p.id]===state.day?'★ Your plan':'Your '+dayName(assign[p.id])}</span>`:'');
   return `<div class="r${opt.pin?' pinrow':''}" data-act="open" data-id="${p.id}" style="animation-delay:${(opt.i||0)*30}ms"><div class="ic" style="background:var(--t-${p.t});color:var(--c-${p.t})">${iconFor(p)}</div><div class="tx"><div class="nm">${favs.has(p.id)?'★ ':''}${esc(p.n)}</div>${opt.why?`<div class="why">${esc(opt.why)}</div>`:''}<div class="ln">${tags}${bits.join(' · ')||esc(p.d)}</div></div></div>`;
 }
 function suggested(type){
@@ -536,6 +545,11 @@ function openNowBlock(type){
   if(!open.length)return '';
   return section('Open now','Closest first',open.map((p,i)=>row(p,{i})).join(''));
 }
+function mineBlock(type){
+  const mine=PLACES.filter(p=>p.t===type&&assign[p.id]===state.day);
+  if(!mine.length)return '';
+  return section('Your plan for '+dayObj().dn,'Places you assigned to this day.',mine.map((p,i)=>row(p,{i})).join(''));
+}
 function suggestBlock(type){
   const s=suggested(type);if(!s.length)return '';
   return section('Suggested for '+dayObj().dn,'',s.map(([p,why],i)=>row(p,{why,i})).join(''));
@@ -547,7 +561,7 @@ function resvBlock(){
 }
 function viewEat(){
   const all=listOf('eat');const grp=(m)=>all.filter(p=>(MEAL[p.id]||'').includes(m)).sort(byDistance);
-  return resvBlock()+filtersHtml()+openNowBlock('eat')+suggestBlock('eat')+
+  return resvBlock()+filtersHtml()+mineBlock('eat')+openNowBlock('eat')+suggestBlock('eat')+
    section('Coffee & breakfast','The hotel doesn’t serve breakfast.',grp('b').map((p,i)=>row(p,{i})).join(''))+
    section('Lunch & tacos','',grp('l').map((p,i)=>row(p,{i})).join(''))+
    section('Dinner','Sunset is about 5:34. Dinner at 6:30 fits nicely after it.',grp('d').map((p,i)=>row(p,{i})).join(''));
@@ -569,29 +583,40 @@ function tideBlock(){
 }
 function viewBeach(){
   return `<div class="sec" style="padding-bottom:0"><h2>Today’s water</h2></div><div class="rows" style="margin-top:6px">${tideBlock()}<div class="note">These are Pacific beaches with strong rips. Walk and wade, and only swim with lifeguards and calm water. Low tide is best for beachcombing.</div></div>`+
-   filtersHtml()+suggestBlock('beach')+
+   filtersHtml()+mineBlock('beach')+suggestBlock('beach')+
    section('Sunset spots','Get there 20–30 minutes before sunset.',listOf('beach').concat([P.green]).filter(p=>p.sunset).sort(byDistance).map((p,i)=>row(p,{i})).join(''))+
    section('All beaches','',listOf('beach').sort(byDistance).map((p,i)=>row(p,{i})).join(''));
 }
-function viewDo(){return filtersHtml()+suggestBlock('do')+section('Things to do','',listOf('do').sort(byDistance).map((p,i)=>row(p,{i})).join(''))}
+function viewDo(){return filtersHtml()+mineBlock('do')+suggestBlock('do')+section('Things to do','',listOf('do').sort(byDistance).map((p,i)=>row(p,{i})).join(''))}
 function viewNight(){
   const music=linesFor('music',state.day);
   const gigs=music.map((m,i)=>{const unconf=/\s\?\s/.test(' '+m+' ')||m.includes(' ? ');const clean=m.replace(/\s\?\s/,' ');const mt=clean.match(/^(\S+(?:\s(?:am|pm))?)\s+(.*)$/i);const tm=mt?mt[1]:'';const rest=mt?mt[2]:clean;const parts=rest.split(' · ');
     return `<div class="r" style="cursor:default;animation-delay:${i*30}ms"><div class="ic" style="background:var(--t-night);color:var(--c-night)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="tx"><div class="nm" style="white-space:normal">${esc(parts[0])}</div><div class="ln">${unconf?'<span class="tag">unconfirmed</span>':''}${esc(tm)}${parts[1]?' · '+esc(parts.slice(1).join(' · ')):''}</div></div></div>`}).join('');
   return section(isToday(state.day)?'Tonight’s music':'Music on '+dayObj().dn,'From local listings. Schedules change, so check before you go.',gigs||'<div class="note">Nothing listed for this day.</div>')+
    `<div class="note"><a href="https://whattodobaja.com/today" target="_blank" rel="noopener" style="color:var(--sea);font-weight:700;text-decoration:none">Check today’s listings →</a> (needs signal)</div>`+
-   filtersHtml()+suggestBlock('night')+section('Bars & venues','Todos Santos goes quiet early. Most places close by 9–11 pm.',listOf('night').sort(byDistance).map((p,i)=>row(p,{i})).join(''));
+   filtersHtml()+mineBlock('night')+suggestBlock('night')+section('Bars & venues','Todos Santos goes quiet early. Most places close by 9–11 pm.',listOf('night').sort(byDistance).map((p,i)=>row(p,{i})).join(''));
+}
+function dayPicker(id,cls){return `<div class="${cls}">${DAYS.map(d=>`<button class="${assign[id]===d.k?'on':''}" data-act="assign" data-id="${id}" data-k="${d.k}">${d.dn}${d.k==='11/28'?' 🎂':''}</button>`).join('')}</div>`}
+function savedSection(){
+  const ids=[...favs].filter(id=>P[id]);
+  if(!ids.length)return section('Saved places','Tap ☆ on any place to save it, then give it a day here.','<div class="note">Nothing saved yet.</div>');
+  let html='';let i=0;
+  for(const d of DAYS){const list=ids.filter(id=>assign[id]===d.k);if(!list.length)continue;
+    html+=`<div class="dayhead"><b>${d.short}${d.k==='11/28'?' 🎂':''}</b><span>${list.length} place${list.length>1?'s':''}</span></div><div class="rows">`+list.map(id=>row(P[id],{i:i++})+dayPicker(id,'daypick')).join('')+'</div>'}
+  const un=ids.filter(id=>!assign[id]||!DAYS.some(d=>d.k===assign[id]));
+  if(un.length)html+=`<div class="dayhead"><b>Not assigned yet</b><span>Tap a day</span></div><div class="rows">`+un.map(id=>row(P[id],{i:i++})+dayPicker(id,'daypick')).join('')+'</div>';
+  return `<div class="sec"><h2>Saved places</h2><p class="hint">Give each one a day. They’ll show up under “Your plan” in that day’s tabs.</p></div>`+html;
 }
 function viewInfo(){
   const d=dayObj();
   return resvBlock()+
-  section('Saved places','',[...favs].filter(id=>P[id]).map((id,i)=>row(P[id],{i})).join('')||'<div class="note">Tap ☆ on any place to save it here.</div>')+
+  savedSection()+
   section('Emergency','',`<div class="kv"><b>911</b><span class="grow">Police, fire, ambulance</span><a class="btn" href="tel:911">Call</a></div><div class="kv"><b>078</b><span class="grow">Tourist help & Ángeles Verdes roadside</span><a class="btn" href="tel:078">Call</a></div><div class="kv"><b>Hotel</b><span class="grow">+52 612 145 0547</span><a class="btn" href="tel:+526121450547">Call</a></div>`+['pharm1','pharm2'].map((id,i)=>row(P[id],{i})).join(''))+
   section('Money, gas & driving','',['atm','gas1','gas2'].map((id,i)=>row(P[id],{i})).join('')+`<div class="note">Carry pesos for tacos and tips. Decline the ATM’s own exchange rate. Avoid Hwy 19 after dark if you can (no lights, wandering cattle). Todos Santos is 1 hour ahead of Portland.</div>`)+
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
   section('Offline maps','With signal, the Map tab is Google Maps. To have Google Maps work with no signal too, download the area in the Google Maps app before you go.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:14.5px"><ol style="margin:0;padding-left:20px;line-height:1.6"><li>Open the <b>Google Maps app</b> on Wi-Fi.</li><li>Tap your profile picture → <b>Offline maps</b> → <b>Select your own map</b>.</li><li>Fit the box from <b>Todos Santos down to Cerritos</b>, then <b>Download</b>.</li></ol><div class="actions"><a class="btn pri" href="https://www.google.com/maps/@23.40,-110.20,11z" target="_blank" rel="noopener">Open Google Maps</a></div><p class="mut small" style="margin:8px 0 0">Directions buttons in this app open Google Maps, so they’ll use that download. With no signal, this app’s Map tab shows a simple sketch map with your places and GPS dot.</p></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 5.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 5.1.</div>`);
 }
 
 /* ================= sheet ================= */
@@ -602,6 +627,7 @@ function openSheet(id){
   $('#sheet').innerHTML=`<div class="grab"></div><div class="row"><div class="ic" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--t-${p.t});color:var(--c-${p.t})">${iconFor(p).replace('<svg','<svg width="22" height="22"')}</div><div class="grow"><h3>${esc(p.n)}</h3><div class="mut small">${st?`<span class="st ${st.cls}">${esc(st.txt)}</span> · `:''}${p.lat!=null?travel(p)+(here()?' from you':' from hotel'):TNAME[p.t]}${p.approx?' · pin approximate':''}</div></div><button class="ib starbtn" data-act="fav" data-id="${id}" style="font-size:20px;color:${favs.has(id)?'#f5b400':'var(--mut)'}">${favs.has(id)?'★':'☆'}</button></div>
   <p style="margin:12px 0 0">${esc(p.d)}</p>
   <div class="actions">${p.lat!=null?`<a class="btn pri" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}" target="_blank" rel="noopener">Directions</a><button class="btn" data-act="showmap" data-id="${id}">Show on map</button>`:''}${p.phone?`<a class="btn" href="tel:${p.phone}">Call</a>`:''}<button class="btn ${done.has(id)?'on':''}" data-act="done" data-id="${id}">${done.has(id)?'✓ Been':'Been here?'}</button></div>
+  <div class="hl"><b>Plan it for</b>${dayPicker(id,'sdays')}</div>
   ${hrs}${MENUS[p.id]||PRICE_NOTES[p.id]?`<div class="hl" style="padding-top:0">${menuHtml(p)}</div>`:''}
   <div class="hl"><b>Reviews</b> <span class="mut small">(needs signal)</span><div class="actions" style="margin-top:6px"><a class="btn" href="${p.pid?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n)}&query_place_id=${p.pid}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+' Todos Santos')}`}" target="_blank" rel="noopener">Google</a><a class="btn" href="https://www.tripadvisor.com/Search?q=${encodeURIComponent(p.n.replace(/\(.*\)/,'')+' Todos Santos')}" target="_blank" rel="noopener">Tripadvisor</a></div></div>
   <div class="hl"><b>Your note</b><input type="text" id="pnote" value="${esc(note)}" placeholder="What did you order? Worth coming back?" style="margin-top:6px"></div>`;
@@ -816,6 +842,9 @@ document.addEventListener('click',e=>{
   else if(a==='save'){['tides','music','resv','notes'].forEach(x=>LS.set(x,$('#e-'+x).value));toast('Saved')}
   else if(a==='reset'){if(confirm('Replace tides, music and reservations with the built-in versions?')){['tides','music','resv'].forEach(LS.del);render();toast('Reset')}}
   else if(a==='wx')refreshWx(true);
+  else if(a==='assign'){const was=assign[id]===k;if(was)delete assign[id];else{assign[id]=k;if(!favs.has(id)){favs.add(id);LS.set('favs',[...favs])}burst(el)}LS.set('assign',assign);toast(was?'Removed from '+dayName(k):'Added to '+DAYS.find(d=>d.k===k).short);
+    if($('#sheet').classList.contains('open')&&state.sel===id){const y=$('#sheet').scrollTop;openSheet(id);$('#sheet').scrollTop=y}
+    if(state.mode==='list'){const y=scrollY;render();scrollTo(0,y)}}
   else if(a==='savetiles')saveTiles();
   else if(a==='savekey'){LS.set('gkey',$('#gkeyIn').value.trim());LS.set('mapProv','google');gmLoading=null;toast(gkey()?'Key saved. Map will use Google when online':'Key removed');render()}
 });
