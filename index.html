@@ -41,9 +41,35 @@ a{color:inherit}
 .ib{border:0;background:var(--chip);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:16px}
 /* hero weather */
 .hero{position:relative;color:#fff;padding:10px 14px 8px;overflow:hidden;transition:background 1.2s}
+.hgrid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.hleft{display:flex;align-items:center;gap:6px;min-width:0}
+.tlbl{font-size:11px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.clock{text-align:center;line-height:1}
+.clock b{display:block;font-size:30px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.clock span{font-size:11px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:.06em}
+.hsub{font-size:12.5px;opacity:.92;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-bday] {--acc:#c8921a}
+html[data-bday] .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,215,120,.35) 50%,transparent 70%);background-size:250% 100%;animation:shimmer 6s ease-in-out infinite;pointer-events:none}
+@keyframes shimmer{0%{background-position:120% 0}100%{background-position:-120% 0}}
+.notecard{margin:12px 16px 0;border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,#f8e7c2,#f3c9a8);color:#3b2a14;cursor:pointer;position:relative;overflow:hidden}
+.notecard b{font-size:16px}.notecard .small{opacity:.8}
+.notecard.locked{background:linear-gradient(135deg,#ece6dd,#e2dbd0);color:var(--ink)}
+html[data-theme=dark] .notecard.locked{background:linear-gradient(135deg,#22272b,#1b1f22);color:var(--ink)}
+.letter{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.55;white-space:pre-wrap;padding:6px 2px}
+.sky{padding:12px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(27,42,92,.07),transparent)}
+.sky .moon{font-size:34px;line-height:1}
+.sky .pl{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.sky .pl span{font-size:12.5px;font-weight:700;background:var(--chip);padding:4px 9px;border-radius:99px}
+.tipbox{padding:12px 16px;border-bottom:1px solid var(--line)}
+.tipbox input{width:100%;font:inherit;font-size:22px;font-weight:700;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--ink)}
+.tipgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.tipgrid div{background:var(--bg2);border-radius:12px;padding:10px 6px;text-align:center}
+.tipgrid b{display:block;font-size:17px}.tipgrid span{font-size:12px;color:var(--mut)}
+.cust{padding:9px 16px;border-bottom:1px solid var(--line);font-size:14.5px;display:flex;gap:10px}
+.cust b{min-width:118px;flex:none}
 .hrow1{display:flex;align-items:center;gap:8px}
-.hero .wxi{width:40px;height:40px;flex:none}
-.hero .temp{font-size:40px;font-weight:300;letter-spacing:-.04em;line-height:1}
+.hero .wxi{width:38px;height:38px;flex:none}
+.hero .temp{font-size:34px;font-weight:300;letter-spacing:-.04em;line-height:1}
 .hmeta{flex:1;min-width:0;line-height:1.25}
 .hero .cond{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hero .sub{font-size:12.5px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -544,29 +570,37 @@ function skyGradient(){
   if(t<s.set)return ['linear-gradient(165deg,#f39a3d 0%,#ea6a4a 55%,#b9437a 100%)','#f39a3d'];
   return ['linear-gradient(165deg,#3a2a74 0%,#9c4f86 55%,#ec8a5a 100%)','#3a2a74'];
 }
+function nowWx(w){
+  if(!w)return null;const ds=tsDateStr(),hr=Math.floor(tsMinutes()/60);
+  if(w.current&&w.current.temperature_2m!=null&&Date.now()-w.saved<45*60e3)return {t:w.current.temperature_2m,code:w.current.weather_code,day:!!w.current.is_day,live:true};
+  const H=w.hourly;if(H&&Array.isArray(H.time)){const k=ds+'T'+String(hr).padStart(2,'0')+':00';const j=H.time.indexOf(k);if(j>=0)return {t:H.temperature_2m[j],code:H.weather_code[j],day:!!H.is_day[j],live:false}}
+  const i=w.daily.time.indexOf(ds);if(i>=0)return {t:w.daily.temperature_2m_max[i],code:w.daily.weather_code?w.daily.weather_code[i]:null,day:true,live:false};
+  return null;
+}
+function clockTxt(){const m=tsMinutes();let h=Math.floor(m/60),mm=m%60;const ap=h>=12?'pm':'am';h=h%12||12;return [h+':'+String(mm).padStart(2,'0'),ap]}
 function heroHtml(){
   const d=dayObj(),w=wxData(),today=isToday(d.k),s=sunTimes(d.d),t=tsMinutes();
-  let temp='–',lbl=today?'Now':'High',cond='Forecast loads when online',hl='',uv=null,icon=wxIcon(null,true),hourly='';
+  const nw=nowWx(w);const ck=clockTxt();
+  let sub='Forecast loads when you’re online',uv=null,hourly='';
   if(w){const W=w.daily,i=W.time.indexOf(d.d);const g=k=>(Array.isArray(W[k])&&W[k][i]!=null)?W[k][i]:null;
     if(i>=0&&g('temperature_2m_max')!=null){
-      const c=w.current&&today?w.current:null;
-      temp=Math.round(c&&c.temperature_2m!=null?c.temperature_2m:g('temperature_2m_max'))+'°';
-      const code=c&&c.weather_code!=null?c.weather_code:g('weather_code');
-      cond=wxDesc(code);icon=wxIcon(code,c&&c.is_day!=null?!!c.is_day:true);
-      hl=`H ${Math.round(g('temperature_2m_max'))}° L ${Math.round(g('temperature_2m_min'))}°`+(g('precipitation_probability_max')?` · rain ${g('precipitation_probability_max')}%`:'');
+      sub=`${today?'Today':d.dn}: ${wxDesc(g('weather_code'))} · H ${Math.round(g('temperature_2m_max'))}° L ${Math.round(g('temperature_2m_min'))}°`+(g('precipitation_probability_max')?` · rain ${g('precipitation_probability_max')}%`:'');
       uv=g('uv_index_max');
       const H=w.hourly;
       if(H&&Array.isArray(H.time)){const items=[];for(let j=0;j<H.time.length;j++){const ht=H.time[j];if(ht.slice(0,10)!==d.d)continue;const hr=+ht.slice(11,13);if(today?hr<Math.floor(t/60):hr<7)continue;if(!today&&hr>22)continue;
           items.push(`<div><span>${items.length===0&&today?'Now':fmt(hr*60).replace(' ','')}</span><svg viewBox="0 0 24 24">${wxIcon(H.weather_code[j],!!H.is_day[j],false).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg><b>${Math.round(H.temperature_2m[j])}°</b></div>`)}
         hourly=items.slice(0,16).join('')}
-    }else cond='Forecast appears closer to the date';
+    }else sub=`${d.dn}: forecast appears closer to the date`;
   }
   const sunTxt=today&&t<s.set?`🌅 ${fmt(s.set)} · ${dur(s.set-t)}`:`🌅 ${fmt(s.set)}`;
   const g2=skyGradient();
   return `<div class="hero" style="background:${g2[0]}">
-   <div class="hrow1">${icon}<div class="temp">${temp}</div><div class="hmeta"><div class="cond">${esc(cond)}</div><div class="sub">${lbl==='Now'?hl:hl.replace(/^H \d+° /,'High · ')}</div></div>
-     <div class="hchips"><span class="hchip">${sunTxt}</span>${uv!=null?`<span class="hchip">UV ${Math.round(uv)}</span>`:''}</div></div>
+   <div class="hgrid"><div class="hleft">${wxIcon(nw?nw.code:null,nw?nw.day:(()=>{const st=sunTimes(tsDateStr()),m=tsMinutes();return m>=st.rise&&m<st.set})())}<div><div class="temp">${nw?Math.round(nw.t)+'°':'–'}</div><div class="tlbl">${nw?(nw.live?'Now':'Now · forecast'):'Now'}</div></div></div>
+     <div class="clock" id="clock"><b>${ck[0]}</b><span>${ck[1]} · Todos Santos</span></div>
+     <div class="hchips"><span class="hchip" id="sunchip">${sunTxt}</span>${uv!=null?`<span class="hchip">UV ${Math.round(uv)}</span>`:''}</div></div>
+   <div class="hsub">${esc(sub)}</div>
    ${hourly?`<div class="hourly">${hourly}</div>`:''}</div>
+   ${noteBanner()}
    <div class="days">${DAYS.map(x=>`<button class="${x.k===state.day?'on':''}" data-act="day" data-k="${x.k}">${x.short}${x.k==='11/28'?' 🎂':''}${isToday(x.k)?'<span class="dot"></span>':''}</button>`).join('')}</div>`;
 }
 function ago(t){const m=Math.round((Date.now()-t)/60000);if(m<2)return 'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<48)return h+' h ago';return Math.round(h/24)+' days ago'}
@@ -647,12 +681,23 @@ const LINKS=[['What To Do Baja','whattodobaja.com/today','https://whattodobaja.c
  ['GetYourGuide','getyourguide.com','https://www.getyourguide.com/s/?q=Todos%20Santos','More bookable tours']];
 function linksBlock(){return section('More ideas online','Opens other sites (needs signal).',LINKS.map(([n,dom,u,d],i)=>`<a class="r" href="${u}" target="_blank" rel="noopener" style="text-decoration:none;animation-delay:${i*30}ms"><div class="ic" style="background:var(--t-do);color:var(--c-do)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></div><div class="tx"><div class="nm">${n}</div><div class="ln">${d} · ${dom}</div></div></a>`).join(''))}
 function viewDo(){const near=listOf('do').filter(p=>p.lat==null||km(HOTEL,p)<=25).sort(byDistance),far=listOf('do').filter(p=>p.lat!=null&&km(HOTEL,p)>25).sort(byDistance);return filtersHtml()+mineBlock('do')+suggestBlock('do')+section('Around town','',near.map((p,i)=>row(p,{i})).join(''))+section('Day trips','Up to about 40 miles away, plus La Paz.',far.map((p,i)=>row(p,{i})).join(''))+linksBlock()}
+function skyCard(){
+  const d=dayObj();let r;try{r=SKY.tonight(d.d,LAT,LON,TZH)}catch(e){return ''}
+  const f=ms=>ms?fmt(Math.round(((ms/60000+TZH*60)%1440+1440)%1440)):'';
+  const ph=r.phase;
+  let dark;if(r.mdStart&&r.mdEnd&&r.mdEnd-r.mdStart>40*60e3)dark=`Darkest sky ${f(r.mdStart)}–${f(r.mdEnd)}${r.moonRise&&r.mdEnd===r.moonRise?' (until moonrise)':''}`;else dark=`Fully dark from ${f(r.darkStart)}, but the moon is up`;
+  const pl=r.planets.map(p=>{const early=p.firstUp&&p.firstUp.ms>r.darkStart+60*60e3;return `<span>${{Venus:'♀',Mars:'♂',Jupiter:'♃',Saturn:'♄',Mercury:'☿'}[p.name]} ${p.name} · ${early?'rises '+SKY.dir(p.firstUp.az)+' ~'+f(p.firstUp.ms):'high in the '+p.dir}</span>`}).join('');
+  return `<div class="sec"><h2>${isToday(d.k)?'Tonight’s sky':d.dn+' night sky'}</h2></div><div class="rows"><div class="sky"><div class="row"><div class="moon">${ph.emoji}</div><div class="grow"><b>${ph.name} · ${Math.round(ph.illum*100)}% lit</b><div class="mut small">${r.moonRise?'Moonrise '+f(r.moonRise):''}${r.moonSet?(r.moonRise?' · ':'')+'Moonset '+f(r.moonSet):''}</div></div></div>
+   <p class="small" style="margin:8px 0 0"><b>${dark}</b></p>
+   <div class="pl">${pl||'<span>No bright planets this evening</span>'}</div>
+   <p class="mut small" style="margin:8px 0 0">The Milky Way’s bright core is out of season (best spring–summer). Saturn is the easy one this week: the steady, unblinking “star” high up after dark. For the darkest beach, head away from town lights to <a class="link" data-act="open" data-id="pastora" style="color:var(--sea);font-weight:700">La Pastora</a> or <a class="link" data-act="open" data-id="cachora" style="color:var(--sea);font-weight:700">La Cachora</a>. Go slow on the dirt roads at night.</p></div></div>`;
+}
 function viewNight(){
   const music=linesFor('music',state.day);
   const gigs=music.map((m,i)=>{const unconf=/\s\?\s/.test(' '+m+' ')||m.includes(' ? ');const clean=m.replace(/\s\?\s/,' ');const mt=clean.match(/^(\S+(?:\s(?:am|pm))?)\s+(.*)$/i);const tm=mt?mt[1]:'';const rest=mt?mt[2]:clean;const parts=rest.split(' · ');
     const gk=state.day+'|'+m;const gs=favGigs.has(gk);
     return `<div class="r" style="cursor:default;animation-delay:${i*30}ms" data-gig="${esc(gk)}"><div class="ic" style="background:var(--t-night);color:var(--c-night)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="tx"><div class="nm" style="white-space:normal">${esc(parts[0])}</div><div class="ln">${unconf?'<span class="tag">unconfirmed</span>':''}${esc(tm)}${parts[1]?' · '+esc(parts.slice(1).join(' · ')):''}</div></div><button class="qs" data-act="gigplan" data-g="${esc(gk)}" title="Add to itinerary" style="font-size:22px">${dayItems(state.day).some(x=>x.gig===gk)?'✓':'+'}</button><button class="qs${gs?' on':''}" data-act="gigstar" data-g="${esc(gk)}">${gs?'★':'☆'}</button></div>`}).join('');
-  return section(isToday(state.day)?'Tonight’s music':'Music on '+dayObj().dn,'From local listings. Schedules change, so check before you go.',gigs||'<div class="note">Nothing listed for this day.</div>')+
+  return skyCard()+section(isToday(state.day)?'Tonight’s music':'Music on '+dayObj().dn,'From local listings. Schedules change, so check before you go.',gigs||'<div class="note">Nothing listed for this day.</div>')+
    `<div class="note"><a href="https://whattodobaja.com/today" target="_blank" rel="noopener" style="color:var(--sea);font-weight:700;text-decoration:none">Check today’s listings →</a> (needs signal)</div>`+
    filtersHtml()+mineBlock('night')+suggestBlock('night')+section('Bars & venues','Todos Santos goes quiet early. Most places close by 9–11 pm.',listOf('night').sort(byDistance).map((p,i)=>row(p,{i})).join(''));
 }
@@ -684,16 +729,49 @@ function itinBlock(){
   <div class="row"><button class="btn" data-act="itsort">Sort by time</button><button class="btn" data-act="share">↗ Send plan</button></div></div>`;
 }
 function savedGigs(){const g=[...favGigs];if(!g.length)return '';return `<div class="dayhead"><b>Saved gigs</b><span>${g.length}</span></div><div class="rows">`+g.map(x=>{const [k,line]=x.split('|');return `<div class="note">★ ${esc(dayName(k))} · ${esc(line.replace(/\s\?\s/,' '))}</div>`}).join('')+'</div>'}
+/* ---- secret birthday note ---- */
+const UNLOCK=Date.UTC(2026,10,28,18-TZH,30); // Sat 11/28, 6:30 pm Todos Santos
+const xo=s=>{let o='';for(let i=0;i<s.length;i++)o+=String.fromCharCode(s.charCodeAt(i)^((i*7+13)%31+1));return o};
+const hideTxt=t=>b64e(xo(t)),showTxt=t=>{try{return xo(b64d(t))}catch(e){return ''}};
+const noteAuthor=()=>!!LS.get('bnoteAuthor',false);
+const myNote=()=>LS.get('bnote','');           // author's own (hidden-encoded)
+const herNote=()=>LS.get('bnoteIn','');         // received (hidden-encoded)
+function noteBanner(){
+  if(noteAuthor()||!herNote())return '';
+  const left=UNLOCK-Date.now();
+  if(left>0)return `<div class="notecard locked" data-act="notepeek"><b>💌 Something for you</b><div class="small">Unlocks Saturday at 6:30 pm · ${left>864e5?Math.ceil(left/864e5)+' days':dur(left/60000)} to go</div></div>`;
+  return `<div class="notecard" data-act="noteopen"><b>💌 Your birthday note is ready</b><div class="small">Tap to open</div></div>`;
+}
+function openNoteEditor(){
+  $('#sheet').innerHTML=`<div class="grab"></div><h3>💌 A note for her birthday</h3><p class="small mut">Only on your phone. It travels hidden inside the plan link. On her phone it stays locked until <b>Sat 6:30 pm</b> (dinner at Jazamango), then opens with a little celebration.</p><textarea id="noteTxt" style="min-height:180px;font-family:Georgia,serif;font-size:16px" placeholder="Write something just for her…">${esc(showTxt(myNote()))}</textarea><div class="actions"><button class="btn pri" data-act="notesave">Save note</button><button class="btn" data-act="share">↗ Send plan with note</button></div><p class="mut small">Edit anytime, then send the plan link again. Don’t open the link on her phone yourself, or she’ll get a preview of the locked card.</p>`;
+  $('#sheet').classList.add('open');$('#scrim').classList.add('open');
+}
+function openLetter(){
+  const t=showTxt(herNote());
+  $('#sheet').innerHTML=`<div class="grab"></div><h3>Happy birthday 🎂</h3><div class="letter">${esc(t)}</div><div class="actions"><button class="btn" data-act="close">Close</button></div>`;
+  $('#sheet').classList.add('open');$('#scrim').classList.add('open');confetti();LS.set('bnoteRead',true);
+}
+function fxRate(){return LS.get('fxManual',0)||((LS.get('fx',null)||{}).mxn)||0}
+async function refreshFx(){try{const r=await fetch('https://open.er-api.com/v6/latest/USD');if(!r.ok)throw 0;const j=await r.json();const m=j&&j.rates&&j.rates.MXN;if(m){LS.set('fx',{mxn:m,saved:Date.now()});if(state.tab==='info'&&state.mode==='list'&&!document.activeElement.matches('input,textarea'))render()}}catch(e){}}
+function tipCalc(){const v=parseFloat(($('#bill')||{}).value)||0;const fx=fxRate();const out=$('#tipOut');if(!out)return;
+  out.innerHTML=[10,15,20].map(p=>{const tip=Math.round(v*p/100/5)*5;return `<div><span>${p}%</span><b>$${tip.toLocaleString('en-US')}</b><span>total $${(v+tip).toLocaleString('en-US')}${fx?` · ≈US$${((v+tip)/fx).toFixed(0)}`:''}</span></div>`}).join('')}
+function tipsSection(){
+  const fx=LS.get('fx',null),m=LS.get('fxManual',0);
+  const rateTxt=m?`Your rate: ${m} pesos per US$`:fx?`≈${fx.mxn.toFixed(2)} pesos per US$ (saved ${ago(fx.saved)})`:'Dollar amounts appear after the app has been online once';
+  const C=[['Restaurants','10–15% in cash is customary. Check the bill first for “servicio incluido.”'],['Asking for the bill','It won’t come until you ask: “La cuenta, por favor.” They bring the card machine to the table.'],['Bars','About 10%, or 10–20 pesos a drink.'],['Gas attendants','10–20 pesos, more if they clean the windshield. Check the pump starts at zero.'],['Grocery baggers','5–10 pesos. Often seniors or teens working only for tips.'],['Housekeeping','About 50–100 pesos a day, left daily.'],['Guides & surf instructors','10–20% for a good experience.'],['Parking helpers','10–20 pesos to the person waving you in.'],['Strolling musicians','Agree on the price per song before they start.'],['Pay in pesos','Paying in dollars usually gets a poor rate. Decline the card machine’s offer to charge in USD.'],['Greetings','Say “buenos días / buenas tardes” entering small shops; “provecho” to people eating.'],['Water','Drink bottled or filtered water; ice in restaurants is normally purified.'],['Roads','Watch for topes (speed bumps). Military checkpoints on the highway are routine; be polite and patient.'],['Pace','“Ahorita” can mean now or later. Some small shops close mid-afternoon and on Sundays.']];
+  return section('Tips & customs','Typical amounts for southern Baja. Small bills and coins help.',`<div class="tipbox"><input id="bill" type="number" inputmode="decimal" placeholder="Bill in pesos, e.g. 1200" data-act="bill"><div class="tipgrid" id="tipOut"></div><div class="row mut small" style="margin-top:8px"><span class="grow">${rateTxt}</span><button class="btn" data-act="fxset" style="padding:5px 9px;font-size:12px">Set rate</button></div></div>`+C.map(([k,v])=>`<div class="cust"><b>${k}</b><span>${v}</span></div>`).join(''));
+}
 function viewInfo(){
   const d=dayObj();
-  return itinBlock()+resvBlock()+
+  return (noteAuthor()?`<div class="notecard" data-act="noteedit" style="margin-top:12px"><b>💌 Your note for her</b><div class="small">${myNote()?'Saved. Unlocks on her phone Sat 6:30 pm. Tap to edit':'Tap to write it'}</div></div>`:'')+itinBlock()+resvBlock()+
   savedSection()+
   section('Emergency','',`<div class="kv"><b>911</b><span class="grow">Police, fire, ambulance</span><a class="btn" href="tel:911">Call</a></div><div class="kv"><b>078</b><span class="grow">Tourist help & Ángeles Verdes roadside</span><a class="btn" href="tel:078">Call</a></div><div class="kv"><b>Hotel</b><span class="grow">+52 612 145 0547</span><a class="btn" href="tel:+526121450547">Call</a></div>`+['pharm1','pharm2'].map((id,i)=>row(P[id],{i})).join(''))+
+  tipsSection()+
   section('Money, gas & driving','',['atm','gas1','gas2'].map((id,i)=>row(P[id],{i})).join('')+`<div class="note">Carry pesos for tacos and tips. Decline the ATM’s own exchange rate. Avoid Hwy 19 after dark if you can (no lights, wandering cattle). Todos Santos is 1 hour ahead of Portland.</div>`)+
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
   section('Offline maps','With signal, the Map tab is Google Maps. To have Google Maps work with no signal too, download the area in the Google Maps app before you go.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:14.5px"><ol style="margin:0;padding-left:20px;line-height:1.6"><li>Open the <b>Google Maps app</b> on Wi-Fi.</li><li>Tap your profile picture → <b>Offline maps</b> → <b>Select your own map</b>.</li><li>Fit the box from <b>Todos Santos down to Cerritos</b>, then <b>Download</b>.</li></ol><div class="actions"><a class="btn pri" href="https://www.google.com/maps/@23.40,-110.20,11z" target="_blank" rel="noopener">Open Google Maps</a></div><p class="mut small" style="margin:8px 0 0">Directions buttons in this app open Google Maps, so they’ll use that download. With no signal, this app’s Map tab shows a simple sketch map with your places and GPS dot.</p></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 6.1.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 7.</div>`);
 }
 
 /* ================= sheet ================= */
@@ -723,7 +801,7 @@ function burst(el){const b=el.getBoundingClientRect();const cx=b.left+b.width/2,
 const THEMES=['light','dark','auto','sunset'];const themeMode=()=>LS.get('theme2','light');
 function isDark(){const m=themeMode();if(m==='light')return false;if(m==='dark')return true;if(m==='sunset'){const s=sunTimes(tsDateStr()),t=tsMinutes();return t>=s.set||t<s.rise}return matchMedia('(prefers-color-scheme: dark)').matches}
 let lastDark=null;
-function applyTheme(){const dk=isDark();document.documentElement.dataset.theme=dk?'dark':'light';$('#themeColor').setAttribute('content',dk?'#0e1113':'#f8f5f0');const m=themeMode();$('#themeBtn').textContent=m==='dark'?'🌙':m==='light'?'☀️':m==='sunset'?'🌅':'🌓';if(lastDark!==null&&lastDark!==dk&&mapState.el){clearTiles();mapRender()}lastDark=dk}
+function applyTheme(){const dk=isDark();if(tsTodayKey()==='11/28')document.documentElement.dataset.bday='1';else delete document.documentElement.dataset.bday;document.documentElement.dataset.theme=dk?'dark':'light';$('#themeColor').setAttribute('content',dk?'#0e1113':'#f8f5f0');const m=themeMode();$('#themeBtn').textContent=m==='dark'?'🌙':m==='light'?'☀️':m==='sunset'?'🌅':'🌓';if(lastDark!==null&&lastDark!==dk&&mapState.el){clearTiles();mapRender()}lastDark=dk}
 try{const mq=matchMedia('(prefers-color-scheme: dark)');if(mq.addEventListener)mq.addEventListener('change',applyTheme);else if(mq.addListener)mq.addListener(applyTheme)}catch(e){}
 
 /* ================= Google Maps (online, needs a key) ================= */
@@ -885,6 +963,82 @@ async function saveTiles(){
   LS.set('tilesSaved',Date.now());if($('#tileStatus'))$('#tileStatus').textContent=fail?`Saved with ${fail} gaps. Try again on better Wi-Fi`:'✅ Saved just now. The map works offline';toast(fail?'Map saved (some gaps)':'Map saved for offline');burst($('[data-act=savetiles]')||document.body);
 }
 
+/* ================= night sky (offline, low-precision) ================= */
+const SKY=(()=>{
+  const RAD=Math.PI/180,DEG=180/Math.PI;
+  const jd=ms=>ms/864e5+2440587.5;
+  const norm=a=>((a%360)+360)%360;
+  // JPL approximate Keplerian elements (J2000, valid 1800–2050): a,e,I,L,peri,node + rates per century
+  const EL={
+    Mercury:[0.38709927,0.20563593,7.00497902,252.25032350,77.45779628,48.33076593, 0.00000037,0.00001906,-0.00594749,149472.67411175,0.16047689,-0.12534081],
+    Venus:[0.72333566,0.00677672,3.39467605,181.97909950,131.60246718,76.67984255, 0.00000390,-0.00004107,-0.00078890,58517.81538729,0.00268329,-0.27769418],
+    Earth:[1.00000261,0.01671123,-0.00001531,100.46457166,102.93768193,0, 0.00000562,-0.00004392,-0.01294668,35999.37244981,0.32327364,0],
+    Mars:[1.52371034,0.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891, 0.00001847,0.00007882,-0.00813131,19140.30268499,0.44441088,-0.29257343],
+    Jupiter:[5.20288700,0.04838624,1.30439695,34.39644051,14.72847983,100.47390909, -0.00011607,-0.00013253,-0.00183714,3034.74612775,0.21252668,0.20469106],
+    Saturn:[9.53667594,0.05386179,2.48599187,49.95424423,92.59887831,113.66242448, -0.00125060,-0.00050991,0.00193609,1222.49362201,-0.41897216,-0.28867794]
+  };
+  function helio(name,T){
+    const e0=EL[name];const a=e0[0]+e0[6]*T,e=e0[1]+e0[7]*T,I=(e0[2]+e0[8]*T)*RAD,L=e0[3]+e0[9]*T,w=e0[4]+e0[10]*T,O=e0[5]+e0[11]*T;
+    const om=(w-O)*RAD,M=norm(L-w)*RAD,On=O*RAD;
+    let E=M+e*Math.sin(M);for(let k=0;k<6;k++)E=E-(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));
+    const xp=a*(Math.cos(E)-e),yp=a*Math.sqrt(1-e*e)*Math.sin(E);
+    const x=(Math.cos(om)*Math.cos(On)-Math.sin(om)*Math.sin(On)*Math.cos(I))*xp+(-Math.sin(om)*Math.cos(On)-Math.cos(om)*Math.sin(On)*Math.cos(I))*yp;
+    const y=(Math.cos(om)*Math.sin(On)+Math.sin(om)*Math.cos(On)*Math.cos(I))*xp+(-Math.sin(om)*Math.sin(On)+Math.cos(om)*Math.cos(On)*Math.cos(I))*yp;
+    const z=Math.sin(om)*Math.sin(I)*xp+Math.cos(om)*Math.sin(I)*yp;
+    return [x,y,z];
+  }
+  const OBL=23.43928*RAD;
+  function eclToEq(x,y,z){const ye=y*Math.cos(OBL)-z*Math.sin(OBL),ze=y*Math.sin(OBL)+z*Math.cos(OBL);return {ra:Math.atan2(ye,x),dec:Math.atan2(ze,Math.hypot(x,ye)),dist:Math.hypot(x,y,z)}}
+  function planetEq(name,ms){const T=(jd(ms)-2451545)/36525;const p=helio(name,T),E=helio('Earth',T);return eclToEq(p[0]-E[0],p[1]-E[1],p[2]-E[2])}
+  function sunEq(ms){const T=(jd(ms)-2451545)/36525;const E=helio('Earth',T);return eclToEq(-E[0],-E[1],-E[2])}
+  function moonEq(ms){ // low precision (approx. 0.3°)
+    const d=jd(ms)-2451545;
+    const L=norm(218.316+13.176396*d),M=norm(134.963+13.064993*d)*RAD,F=norm(93.272+13.229350*d)*RAD,D=norm(297.850+12.190749*d)*RAD,Ms=norm(357.529+0.98560028*d)*RAD;
+    const lon=(L+6.289*Math.sin(M)+1.274*Math.sin(2*D-M)+0.658*Math.sin(2*D)+0.214*Math.sin(2*M)-0.186*Math.sin(Ms)-0.114*Math.sin(2*F))*RAD;
+    const lat=(5.128*Math.sin(F))*RAD;
+    const x=Math.cos(lat)*Math.cos(lon),y=Math.cos(lat)*Math.sin(lon),z=Math.sin(lat);
+    return eclToEq(x,y,z);
+  }
+  function altAz(eq,ms,lat,lon){
+    const d=jd(ms)-2451545;const gmst=norm(280.46061837+360.98564736629*d)*RAD;const H=gmst+lon*RAD-eq.ra;const la=lat*RAD;
+    const alt=Math.asin(Math.sin(la)*Math.sin(eq.dec)+Math.cos(la)*Math.cos(eq.dec)*Math.cos(H));
+    const az=Math.atan2(-Math.sin(H)*Math.cos(eq.dec),Math.cos(la)*Math.sin(eq.dec)-Math.sin(la)*Math.cos(eq.dec)*Math.cos(H));
+    return {alt:alt*DEG,az:norm(az*DEG)};
+  }
+  function moonPhase(ms){
+    const syn=29.530588853,ref=Date.UTC(2000,0,6,18,14);const age=((ms-ref)/864e5%syn+syn)%syn;const f=age/syn;
+    const illum=(1-Math.cos(2*Math.PI*f))/2;
+    const names=['New moon','Waxing crescent','First quarter','Waxing gibbous','Full moon','Waning gibbous','Last quarter','Waning crescent'];
+    const emo=['🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘'];const i=Math.round(f*8)%8;
+    return {age,illum,name:names[i],emoji:emo[i]};
+  }
+  const dir=az=>['N','NE','E','SE','S','SW','W','NW'][Math.round(az/45)%8];
+  // tonight for a trip date (local UTC-7): scan 3 pm → 9 am next day
+  function tonight(dateStr,lat,lon,tz){
+    const [y,m,d]=dateStr.split('-').map(Number);const t0=Date.UTC(y,m-1,d,15-tz);// 15:00 local
+    const step=10*60e3,N=18*6;let moonRise=null,moonSet=null,darkStart=null,darkEnd=null,prevM=null,prevS=null;
+    const samples=[];
+    for(let i=0;i<=N;i++){const ms=t0+i*step;const s=altAz(sunEq(ms),ms,lat,lon).alt,mo=altAz(moonEq(ms),ms,lat,lon).alt;
+      if(prevM!=null){if(prevM<0.125&&mo>=0.125&&moonRise==null)moonRise=ms;if(prevM>=0.125&&mo<0.125&&moonSet==null)moonSet=ms}
+      if(prevS!=null){if(prevS>=-18&&s<-18&&darkStart==null)darkStart=ms;if(prevS<-18&&s>=-18&&darkEnd==null&&darkStart)darkEnd=ms}
+      samples.push({ms,s,mo});prevM=mo;prevS=s}
+    // moonless dark window
+    let mdStart=null,mdEnd=null,best=0,cur=null;
+    for(const p of samples){const ok=p.s<-18&&p.mo<0;if(ok&&cur==null)cur=p.ms;if((!ok||p===samples[samples.length-1])&&cur!=null){const len=p.ms-cur;if(len>best){best=len;mdStart=cur;mdEnd=p.ms}cur=null}}
+    const moonUpAtDark=darkStart?altAz(moonEq(darkStart+30*60e3),darkStart+30*60e3,lat,lon).alt>0:false;
+    // planets: best altitude between dark start and 1 am
+    const until=Date.UTC(y,m-1,d,25-tz);const planets=[];
+    for(const name of ['Venus','Mars','Jupiter','Saturn','Mercury']){
+      let bestAlt=-90,bestMs=null,firstUp=null;
+      for(let ms=(darkStart||t0+3*3600e3)-60*60e3;ms<=until;ms+=15*60e3){const a=altAz(planetEq(name,ms),ms,lat,lon);if(a.alt>10&&firstUp==null)firstUp={ms,az:a.az};if(a.alt>bestAlt){bestAlt=a.alt;bestMs=ms}}
+      if(bestAlt>12){const a=altAz(planetEq(name,bestMs),bestMs,lat,lon);planets.push({name,alt:Math.round(bestAlt),az:a.az,dir:dir(a.az),best:bestMs,firstUp})}
+    }
+    const mp=moonPhase(darkStart||t0+4*3600e3);
+    return {moonRise,moonSet,darkStart,darkEnd,mdStart,mdEnd,moonUpAtDark,planets,phase:mp};
+  }
+  return {tonight,moonPhase,planetEq,altAz,sunEq,moonEq,dir};
+})();
+
 /* ================= render ================= */
 function setSeg(){const seg=$('#seg');const b=seg.querySelector(`[data-k=${state.mode}]`);seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));const th=seg.querySelector('.thumb');th.style.left=b.offsetLeft+'px';th.style.width=b.offsetWidth+'px'}
 function render(){
@@ -931,9 +1085,15 @@ document.addEventListener('click',e=>{
   else if(a==='itmove'){const it=dayItems(state.day);const i=it.findIndex(x=>x.k===k),j=i+(+el.dataset.v);if(j<0||j>=it.length)return;[it[i],it[j]]=[it[j],it[i]];saveItin();refreshItin();const r=document.querySelector(`[data-row="${k}"]`);if(r)r.classList.add('flash')}
   else if(a==='itsort'){const it=dayItems(state.day);const key=x=>{const m=tmin(x.time);return m==null?9999:m};it.sort((x,y)=>key(x)-key(y));saveItin();refreshItin();toast('Sorted by time')}
   else if(a==='share')sharePlan();
+  else if(a==='noteedit')openNoteEditor();
+  else if(a==='fxset'){const v=prompt('Pesos per US dollar (leave blank to use the saved rate):',fxRate()?fxRate().toFixed(2):'');if(v===null)return;const n=parseFloat(v);LS.set('fxManual',n>0?n:0);render()}
+  else if(a==='notesave'){LS.set('bnote',hideTxt($('#noteTxt').value));toast('Note saved. Send the plan to deliver it');closeSheet();if(state.tab==='info')render()}
+  else if(a==='notepeek'){toast('No peeking 🙂 Opens Saturday at 6:30 pm');el.animate([{transform:'rotate(0)'},{transform:'rotate(-2deg)'},{transform:'rotate(2deg)'},{transform:'rotate(0)'}],{duration:350})}
+  else if(a==='noteopen')openLetter();
+  else if(a==='close')closeSheet();
   else if(a==='savekey'){LS.set('gkey',$('#gkeyIn').value.trim());LS.set('mapProv','google');gmLoading=null;toast(gkey()?'Key saved. Map will use Google when online':'Key removed');render()}
 });
-document.addEventListener('input',e=>{const el=e.target;if(el.dataset&&el.dataset.act==='memo'){const m=LS.get('memo',{});m[el.dataset.k]=el.value;LS.set('memo',m)}});
+document.addEventListener('input',e=>{const el=e.target;if(el.id==='bill')tipCalc();if(el.dataset&&el.dataset.act==='memo'){const m=LS.get('memo',{});m[el.dataset.k]=el.value;LS.set('memo',m)}});
 document.addEventListener('change',e=>{const el=e.target;if(!el.dataset)return;
   if(el.dataset.act==='photo')addPhotos(el.files,el.dataset.k);
   if(el.dataset.act==='itpick'&&el.value){dayItems(state.day).push({k:uid(),id:el.value});if(!favs.has(el.value)){}saveItin();toast('Added '+P[el.value].n);refreshItin(true)}
@@ -945,19 +1105,21 @@ function refreshItin(flashLast){const y=scrollY;render();scrollTo(0,y);if(flashL
 function b64e(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 function b64d(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(escape(atob(s)))}
 async function sharePlan(){
-  const data={v:1,itin:ITIN,favs:[...favs],gigs:[...favGigs]};
+  const data={v:1,itin:ITIN,favs:[...favs],gigs:[...favGigs]};if(noteAuthor()&&myNote())data.n=myNote();
   const url=location.origin+location.pathname+'#plan='+b64e(JSON.stringify(data));
   const text='Our Todos Santos plan. Open to load it in the app:';
   try{if(navigator.share){await navigator.share({title:'Todos Santos plan',text,url});return}}catch(e){if(e&&e.name==='AbortError')return}
   try{await navigator.clipboard.writeText(url);toast('Link copied. Paste it in a text')}catch(e){prompt('Copy this link and send it:',url)}
 }
 function checkImport(){
+  if(/^#note$/.test(location.hash)){LS.set('bnoteAuthor',true);history.replaceState(null,'',location.pathname);state.tab='info';state.mode='list';render();setTimeout(openNoteEditor,300);return}
   const m=location.hash.match(/plan=([^&]+)/);if(!m)return;
   let data;try{data=JSON.parse(b64d(m[1]))}catch(e){toast('That plan link looks broken');return}
   history.replaceState(null,'',location.pathname);
   const n=Object.values(data.itin||{}).reduce((a,x)=>a+(x?x.length:0),0);
   $('#sheet').innerHTML=`<div class="grab"></div><h3>Load shared plan?</h3><p>This link has <b>${n} itinerary item${n===1?'':'s'}</b> and ${(data.favs||[]).length} saved places.</p><div class="actions"><button class="btn pri" id="impReplace">Replace mine</button><button class="btn" id="impMerge">Merge with mine</button><button class="btn" id="impNo">Cancel</button></div><p class="mut small">Replace makes your itinerary match exactly. Merge keeps yours and adds anything new.</p>`;
   $('#sheet').classList.add('open');$('#scrim').classList.add('open');
+  if(data.n&&!noteAuthor())LS.set('bnoteIn',data.n);
   const done=msg=>{saveItin();LS.set('favs',[...favs]);LS.set('favgigs',[...favGigs]);closeSheet();state.tab='info';state.mode='list';render();confettiSmall();toast(msg)};
   $('#impReplace').onclick=()=>{for(const k in ITIN)delete ITIN[k];Object.assign(ITIN,data.itin||{});(data.favs||[]).forEach(f=>favs.add(f));(data.gigs||[]).forEach(g=>favGigs.add(g));done('Plan loaded')};
   $('#impMerge').onclick=()=>{for(const k in (data.itin||{})){const cur=dayItems(k);for(const it of data.itin[k]){const dup=cur.some(x=>x.k===it.k||(it.id&&x.id===it.id)||(it.gig&&x.gig===it.gig)||(it.text&&!it.id&&!it.gig&&x.text===it.text));if(!dup)cur.push(it)}}(data.favs||[]).forEach(f=>favs.add(f));(data.gigs||[]).forEach(g=>favGigs.add(g));done('Plans merged')};
@@ -988,13 +1150,14 @@ async function refreshWx(manual){
   catch(e){if(manual)toast('No connection. Showing the saved forecast')}
 }
 async function offlineStatus(){const el=$('#offl');if(!el)return;let t='';if('serviceWorker' in navigator){const r=await navigator.serviceWorker.getRegistration();t=r&&r.active?'✅ App saved for offline use':'⏳ Not saved yet. Keep it open for a few seconds on Wi-Fi'}else t='This browser can’t save the app offline';el.textContent=t}
-addEventListener('online',()=>{refreshWx();if(state.mode==='map'){render();toast('Back online. Google Maps')}});
+addEventListener('online',()=>{refreshWx();refreshFx();if(state.mode==='map'){render();toast('Back online. Google Maps')}});
 addEventListener('offline',()=>{if(state.mode==='map'){render();toast('Offline. Showing the sketch map')}});
+setInterval(()=>{const c=$('#clock');if(c){const k=clockTxt();c.innerHTML=`<b>${k[0]}</b><span>${k[1]} · Todos Santos</span>`}const sc=$('#sunchip');if(sc&&isToday(state.day)){const s=sunTimes(dayObj().d),t=tsMinutes();sc.textContent=t<s.set?`🌅 ${fmt(s.set)} · ${dur(s.set-t)}`:`🌅 ${fmt(s.set)}`}},15000);
 setInterval(()=>{applyTheme();if(state.mode==='list'&&state.tab!=='info'&&!$('#sheet').classList.contains('open')){const y=scrollY;const h=document.querySelector('.hero');if(h){const tmp=document.createElement('div');tmp.innerHTML=heroHtml();h.replaceWith(tmp.firstElementChild);const dz=document.querySelector('.days');if(dz&&tmp.children[0])dz.replaceWith(tmp.children[0]);scrollTo(0,y)}}},60000);
 
 applyTheme();render();checkImport();addEventListener('hashchange',checkImport);
 if(isToday('11/28')&&!LS.get('cf28',false)){LS.set('cf28',true);setTimeout(confetti,600)}
-{const w=LS.get('wx4',null);if(navigator.onLine&&(!w||Date.now()-w.saved>2*3600e3))refreshWx()}
+{const w=LS.get('wx4',null);if(navigator.onLine&&(!w||Date.now()-w.saved>30*60e3))refreshWx();const fx=LS.get('fx',null);if(navigator.onLine&&(!fx||Date.now()-fx.saved>12*3600e3))refreshFx()}
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>

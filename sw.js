@@ -1,5 +1,5 @@
 // v4: app page network-first; map tiles cache-first (saved for offline).
-const CACHE = 'todos-santos-v6';
+const CACHE = 'todos-santos-v7';
 const TILES = 'todos-santos-tiles-v1';
 const ASSETS = ['./', './index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png'];
 
