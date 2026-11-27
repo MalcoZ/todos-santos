@@ -41,7 +41,7 @@ a{color:inherit}
 .ib{border:0;background:var(--chip);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:16px}
 /* hero weather */
 .hero{position:relative;color:#fff;padding:10px 14px 8px;overflow:hidden;transition:background 1.2s}
-.hgrid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.hgrid{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px}
 .hleft{display:flex;align-items:center;gap:6px;min-width:0}
 .tlbl{font-size:11px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
 .clock{text-align:center;line-height:1}
@@ -610,8 +610,7 @@ function heroHtml(){
   const g2=skyGradient();
   return `<div class="hero" style="background:${g2[0]}">
    <div class="hgrid"><div class="hleft">${wxIcon(nw?nw.code:null,nw?nw.day:(()=>{const st=sunTimes(tsDateStr()),m=tsMinutes();return m>=st.rise&&m<st.set})())}<div><div class="temp">${nw?Math.round(nw.t)+'°':'–'}</div><div class="tlbl">${nw?(nw.live?'Now':'Now · forecast'):'Now'}</div></div></div>
-     <div class="clock" id="clock"><b>${ck[0]}</b><span>${ck[1]} · Todos Santos</span></div>
-     <div class="hchips"><span class="hchip" id="sunchip">${sunTxt}</span>${uv!=null?`<span class="hchip">UV ${Math.round(uv)}</span>`:''}</div></div>
+     <div class="hchips">${uv!=null?`<span class="hchip">UV ${Math.round(uv)}</span>`:''}</div></div>
    <div class="hsub">${esc(sub)}</div>
    ${hourly?`<div class="hourly">${hourly}</div>`:''}</div>
    ${noteBanner()}
@@ -785,7 +784,7 @@ function viewInfo(){
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
   section('Offline maps','With signal, the Map tab is Google Maps. To have Google Maps work with no signal too, download the area in the Google Maps app before you go.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:14.5px"><ol style="margin:0;padding-left:20px;line-height:1.6"><li>Open the <b>Google Maps app</b> on Wi-Fi.</li><li>Tap your profile picture → <b>Offline maps</b> → <b>Select your own map</b>.</li><li>Fit the box from <b>Todos Santos down to Cerritos</b>, then <b>Download</b>.</li></ol><div class="actions"><a class="btn pri" href="https://www.google.com/maps/@23.40,-110.20,11z" target="_blank" rel="noopener">Open Google Maps</a></div><p class="mut small" style="margin:8px 0 0">Directions buttons in this app open Google Maps, so they’ll use that download. With no signal, this app’s Map tab shows a simple sketch map with your places and GPS dot.</p></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 7.1.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 7.2.</div>`);
 }
 
 /* ================= sheet ================= */
