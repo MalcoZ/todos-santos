@@ -435,7 +435,7 @@ const TYPES={eat:['Eat','#e0703f'],beach:['Beaches','#1f8a96'],do:['Do','#7a5cc7
 /* ================= plan ================= */
 // [time, text, placeId?]
 const PLAN={
- '11/27':{sunset:'cachora',items:[['3:00 pm','Check in, then pool time','hotel'],['4:15 pm','Wander the plaza and galleries in the golden light','plaza'],['5:00 pm','Head to La Cachora for your first sunset (about 10 min of bumpy road)','cachora'],['6:30 pm','Dinner at Mejibó, a short walk from the hotel. Reserve','mejibo'],['After','🎵 Live music: Tequila Nation at La Copa (7:30–10) or Las Recias at the Brewing (until 9). Or a nightcap at The Dirty Rose','brew']]},
+ '11/27':{sunset:'cachora',items:[['3:00 pm','Check in, then pool time','hotel'],['4:15 pm','Wander the plaza and galleries in the golden light','plaza'],['5:00 pm','Head to La Cachora for your first sunset (about 10 min of bumpy road)','cachora'],['6:30 pm','Dinner at Mejibó, a short walk from the hotel. Reserve','mejibo'],['After','🎵 Live music: Mescal Beats at La Copa (7:30–10) or Pink Lady Limonata at the Brewing (6:30–9:30). Or a nightcap at The Dirty Rose','brew']]},
  '11/28':{sunset:'lobos',bday:true,items:[['8:00 am','Birthday breakfast at Caffe Todos Santos (cinnamon bun)','caffe'],['9:00 am','Punta Lobos: watch the pangas, then hike to the Old Port','oldport'],['12:30 pm','Carnitas Miguel’s in Pescadero','miguel'],['2:00 pm','Pool and a massage, or 🎵 Barracuda Cantina’s 9th anniversary party in Cerritos (live band and DJs all day)','hotel'],['5:00 pm','Sunset at Punta Lobos, where fishermen sell their catch at dusk','lobos'],['6:30 pm','🎂 Jazamango','jaza'],['After','🎵 Oscar Loredo at Aperture Lounge (starts 7, free) or vinyl night at the Brewing, then The Dirty Rose (open until midnight)','rose']]},
  '11/29':{sunset:'pedrito',items:[['8:00 am','Baja Beans in Pescadero, with Sunday market vendors','beans'],['9:30 am','Playa Las Palmas through the palm forest (daytime only)','palmas'],['1:00 pm','Long lunch at Agricole, often with live music on weekends','agricole'],['3:30 pm','Watch surfers at Cerritos, and wade only','cerritos'],['5:00 pm','Sunset walk at San Pedrito','pedrito'],['6:30 pm','Dinner at Hierbabuena (open Sundays). Drive Hwy 19 back slowly','hierba'],['8:30 pm','🎵 Sunday Night Jazz Sessions at Violeta in town (until 10:30)','violeta']]},
  '11/30':{sunset:'green',items:[['8:30 am','Eco Adventures hike or horseback ride (book ahead)','eco'],['12:30 pm','Lunch at Los Adobes in the cactus garden','adobes'],['2:00 pm','Galleries, shopping, siesta','plaza'],['4:45 pm','Drive to The Green Room (part of the road is unpaved)','green'],['5:34 pm','Sunset with your toes in the sand','green'],['6:30 pm','Dinner at The Green Room','green']]},
@@ -462,23 +462,37 @@ const SEED={
 11/30 High 2:17 pm 3.6
 11/30 Low 10:01 pm 0.7
 # 12/1 wasn't published yet when this was built. Add it here when you have it.`,
- music:`# Listings from livetodossantos.com and whattodobaja.com (checked Nov 24). "?" = sources disagree or unconfirmed. Schedules change.
+ music:`# Listings from livetodossantos.com, whattodobaja.com and thesocialtodossantos.com (checked Nov 27). "?" = sources disagree or unconfirmed. Schedules change.
 11/27 5:00 pm The Tree Huggers · Cerritos Beach Inn
+11/27 5–7:30 pm Tinajas Sessions: Jonathan Orozco & Friends, Latin rhythms · Viñedo Las Tinajas · free
+11/27 5:30 pm Film Festival opening night: No nos moverán · Teatro Márquez de León · MX$75 donation
+11/27 6:00 pm Noche Mexicana school fundraiser, music & Rhythms Complex dance show · Escuela Primaria Miguel Hidalgo · MX$20
 11/27 6–9 pm Soulful Classics under the Stars: Colleen Rennison & Nacho Chávez · Caracara, Villa Santa Cruz (next to The Green Room) · free
-11/27 6–9 pm Las Recias, Friday Night Live · Todos Santos Brewing (5 min walk)
-11/27 6:30 pm ? Pink Lady Limonata · Todos Santos Brewing (one listing, may be the same night)
+11/27 6:00 pm ? Las Recias, band night (one listing only) · Todos Santos Brewing (5 min walk)
+11/27 6:30–9:30 pm Pink Lady Limonata, psychedelic duo · Todos Santos Brewing (5 min walk) · free
 11/27 7:00 pm Trevor Parks, live guitar · Aperture Lounge, Todos Santos · free (doors 6)
-11/27 7:30–10 pm Tequila Nation · La Copa, Hotel Todos Santos
-11/28 11 am–11 pm Barracuda Cantina 9th anniversary: Ceviche Sound live + DJs · Cerritos · one cover for the day
-11/28 7:00 pm Oscar Loredo · Aperture Lounge, Todos Santos · free (doors 6)
+11/27 7:30–10 pm Mescal Beats · La Copa, Hotel Todos Santos
+11/27 8:00 pm DJ Kennedy, vinyl · Bar Bar Not Bar, Todos Santos
+11/28 11 am–11 pm Barracuda Cantina 9th anniversary: Ceviche Sound live + DJ Zero (3–5) · Cerritos · one cover for the day
+11/28 5:30 pm Film Festival: Vainilla (5:30), No dejes a los niños solos (7:30) · Teatro Márquez de León · MX$75 donation each
+11/28 6:00 pm ? Tiger Club opening, DJ Ricky Market until late (4 or 6 pm per listings) · Pescadero 62, El Pescadero · free
+11/28 6–8:30 pm Chicken Swap · Besos de Mezcal, El Pescadero
+11/28 7:00 pm Oscar Loredo Gypsy Project · Aperture Lounge, Todos Santos · free (doors 6)
 11/28 7–10 pm YTOI · Shaka's Cantina, Cerritos
-11/28 7:00 pm Saturday Vinyl Night, DJ Danny Desierto · Todos Santos Brewing · free
-11/29 5:00 pm Open mic & karaoke · Viñedo Las Tinajas winery · free
+11/28 7:00 pm ? Saturday Vinyl Night, DJ Danny Desierto (6 or 7 pm per listings) · Todos Santos Brewing · free
+11/28 7:30–10 pm Mescal Beats · La Copa, Hotel Todos Santos
+11/29 1–5 pm Domingo de Crudos: Tiki Santos x Baja Shitake, live set by Ranita de Santos · downtown Todos Santos
+11/29 5:00 pm Sound Bath & Supper · Lunada, Cerritos · MX$1,555, reserve
+11/29 5–8 pm Open mic & karaoke · Viñedo Las Tinajas winery · free
 11/29 5–8 pm ? Lori Dagenais (or The Tree Huggers, 5:30, per another listing) · La Tuna, Cerritos
-11/29 5:30 pm Open mic, hosted by El Groove · Todos Santos Brewing · free
+11/29 5:30 pm Open mic, hosted by El Groove (music from 6) · Todos Santos Brewing · free
+11/29 5:30 pm Film Festival: Cuidando al Sol (5:30), Cherri, 18+ (7:30) · Teatro Márquez de León · MX$75 donation each
+11/29 6–8:30 pm Chicken Swap · Pescadero 62, El Pescadero
+11/29 6:30 pm Film Festival short films in competition · Pescadero Tennis Club · free with a purchase
 11/29 7:30–10:30 pm Sunday Night Jazz Sessions · Violeta, Todos Santos
 11/30 5–8 pm ? BALAM, local jazz/blues/rock duo (weekly Mondays) · Cleos, Las Tunas
 12/1 6–9 pm ? Taco Tuesday with live music (weekly) · 5 Tacos and a Beer, Las Tunas
+# Mon–Tue listings weren't posted yet on Nov 27; those two are weekly regulars, not confirmed.
 # More weekly regulars: Wine Down Wednesday at Caracara (6–9), Friday Soulful Classics at Caracara (free).
 # Check whattodobaja.com/today when you have signal for anything new.`,
  resv:`11/28 6:30 pm Jazamango (Los Naranjos, La Huerta; not Jazamango Café)`,
@@ -771,7 +785,7 @@ function viewInfo(){
   section(d.k==='11/28'?'Birthday photos & notes':'Photos & notes · '+d.dn,'Saved on this phone only.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line)"><label class="btn">+ Add photos<input type="file" accept="image/*" multiple hidden data-act="photo" data-k="${d.k}"></label><div class="photos" id="ph-${d.k.replace('/','-')}"></div><label class="l">Note</label><textarea data-act="memo" data-k="${d.k}" style="min-height:70px;font-family:inherit;font-size:15px" placeholder="Best bite, best moment…">${esc(LS.get('memo',{})[d.k]||'')}</textarea></div>`)+
   section('Offline maps','With signal, the Map tab is Google Maps. To have Google Maps work with no signal too, download the area in the Google Maps app before you go.',`<div style="padding:10px 16px;border-bottom:1px solid var(--line);font-size:14.5px"><ol style="margin:0;padding-left:20px;line-height:1.6"><li>Open the <b>Google Maps app</b> on Wi-Fi.</li><li>Tap your profile picture → <b>Offline maps</b> → <b>Select your own map</b>.</li><li>Fit the box from <b>Todos Santos down to Cerritos</b>, then <b>Download</b>.</li></ol><div class="actions"><a class="btn pri" href="https://www.google.com/maps/@23.40,-110.20,11z" target="_blank" rel="noopener">Open Google Maps</a></div><p class="mut small" style="margin:8px 0 0">Directions buttons in this app open Google Maps, so they’ll use that download. With no signal, this app’s Map tab shows a simple sketch map with your places and GPS dot.</p></div>`)+
   section('Edit trip data','Lines start with the date (e.g. 11/28). Lines starting with # are notes.',`<div style="padding:4px 16px 12px;border-bottom:1px solid var(--line)"><label class="l">Tides</label><textarea id="e-tides">${esc(data('tides'))}</textarea><label class="l">Live music</label><textarea id="e-music">${esc(data('music'))}</textarea><label class="l">Reservations</label><textarea id="e-resv" style="min-height:60px">${esc(data('resv'))}</textarea><label class="l">Trip notes</label><textarea id="e-notes" style="min-height:60px;font-family:inherit">${esc(data('notes'))}</textarea><div class="actions"><button class="btn pri" data-act="save">Save</button><button class="btn" data-act="reset">Reset to built-in</button></div></div>`)+
-  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 7.</div>`);
+  section('App','',`<div class="kv"><span class="grow small" id="offl">Checking offline status…</span></div><div class="kv"><span class="grow">Theme</span><button class="btn" data-act="theme">${{auto:'Follow phone',light:'Light',dark:'Dark',sunset:'Dark after sunset'}[themeMode()]}</button></div><div class="kv"><span class="grow">Forecast</span><button class="btn" data-act="wx">Refresh</button></div><div class="kv"><span class="grow">Something off?</span><button class="btn" onclick="resetApp()">Reset app</button></div><div class="note">Install it from Safari: Share → Add to Home Screen. Version 7.1.</div>`);
 }
 
 /* ================= sheet ================= */
